@@ -5,51 +5,24 @@ description: "Performs browser automation, web testing, and page interactions. I
 
 # Browser Use Skill
 
-## Description
-
-This skill provides browser automation capabilities for testing web applications and performing web-based tasks.
+This skill provides browser automation capabilities for web testing and page interactions.
 
 ## Features
 
-- Navigate web pages
-- Interact with HTML elements
-- Fill forms automatically
-- Take screenshots
-- Execute JavaScript on pages
-- Verify page content
+- Web application testing
+- UI change verification
+- Browser-based automation tasks
+- Page interaction simulation
 
-## Usage Guidelines
+## Usage
 
-### When to Use
+Invoke this skill when you need to:
+- Test web applications
+- Verify UI changes
+- Perform browser automation
+- Simulate user interactions on web pages
 
-Invoke this skill when:
-- User wants to test web application functionality
-- User needs to verify UI changes or layout
-- User wants to automate repetitive browser tasks
-- User needs to capture screenshots of web pages
-- Testing form submissions or user flows
+## Requirements
 
-### Required Parameters
-
-1. **description**: A short description of the task (3-5 words)
-2. **query**: Detailed automation instructions including:
-   - Target URL to navigate to
-   - Actions to perform
-   - Expected results to verify
-3. **response_language**: Language for the response
-
-### Example
-
-To test a login page:
-```
-Description: Test login
-Query: Navigate to http://localhost:8080/login, fill username 'test' and password '123456', click login button, verify redirect to dashboard
-Response_language: English
-```
-
-## Notes
-
-- Always provide the exact URL to navigate to
-- Be specific about elements to interact with
-- Include expected values for verification tasks
-- For verification-only tasks, explicitly state "Do NOT modify any source code files"
+- Requires a browser environment
+- Supports standard web testing scenarios
