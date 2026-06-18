@@ -1,0 +1,238 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>购物车</title>
+
+<!-- 屏幕自适应 -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+    <!-- 导入css用link -->   
+    <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/css/main.css">
+    <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/css/zui.min.css">
+    <!-- 导入Javascript用script标签 -->
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.0.0.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/zui.min.js"></script>
+    
+</head>
+<body>
+
+    <jsp:include page="/admin/head.jsp"></jsp:include>
+    
+    
+<div class="panel">
+  <div class="panel-body" style="margin-left:4%;">         
+     <table class="table" style="font-weight:bold; width:1300px;">
+  <thead>
+    <tr>   
+      <th colspan="6" style="text-align:center;">
+          <h1>购物车列表</h1>
+      </th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="success" align="center" style="vertical-align:middle; font-size:20px;">  
+      <td>图片</td>
+      <td>商品名称</td>
+      <td>单价</td>
+      <td>数量</td>
+      <td>总价</td>
+      <td>操作</td>
+    </tr>
+    <c:forEach var="cart" items="${cartList }">
+       <tr align="center" style="font-size:16px;">
+         <td style="width:150px; height:150px;"><a href="${pageContext.request.contextPath }${cart.get('cover')}" data-toggle="lightbox" data-group="image-group-1"><img src="${pageContext.request.contextPath }${cart.get('cover')}" class="img-rounded" alt=""></a></td>
+         <td style="vertical-align:middle;">${cart.get('name') }</td>
+         <td style="vertical-align:middle;">${cart.get('price') }</td>
+         <td style="vertical-align:middle;">${cart.get('amount') }</td>
+         <td style="vertical-align:middle;">${cart.get('total_price') }</td>
+         <td style="vertical-align:middle;">
+            <button class="btn btn-primary " type="button" onclick="add(${cart.get('good_id')})">+</button>&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-success " type="button" onclick="sub(${cart.get('good_id')})">-</button>&nbsp;&nbsp;&nbsp;
+            <button class="btn btn-danger " type="button" onclick="deleteGood(${cart.get('good_id')})">x</button>
+         </td>
+       </tr>
+    </c:forEach>
+    <tr>
+       <c:if test="${!empty totalPrice }">
+       <td>
+           总价：  <span style="color:red; font-size:20px; font-weight:bolder;">${totalPrice }</span>
+       </td>
+       <td colspan="5" style="text-align:right; ">
+          <button type="button" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#myModal">立即支付</button>
+       </td>
+       </c:if>
+    </tr>
+    
+    <c:if test="${!empty totalPrice }">
+    <tr>
+        <td colspan="6" style="text-align:right; ">
+            总共有${totalCount }条记录&nbsp;&nbsp;总共有${pageCount }页&nbsp;&nbsp;当前第 ${currentPage+1 }页&nbsp;&nbsp;
+            <a href="javascript:pageHome()">首页</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href="javascript:pagePre()">上一页</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href="javascript:pageNext()">下一页</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <a href="javascript:pageEnd()">尾页</a>                
+        </td>
+    </tr>
+    </c:if>
+    
+    <c:if test="${totalCount==0 }">
+         <tr align="center">
+             <td colspan="6"><span style="color:red; font-size:20px;">暂无数据</span></td>
+         </tr>
+    </c:if>
+  </tbody>
+</table>
+  </div>
+</div>      
+     <!--导入index-bottom.html以及main.css-->
+     <jsp:include page="/admin/bottom.jsp"></jsp:include>
+     
+        
+ <!-- 对话框HTML   支付界面-->
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+        <h4 class="modal-title">请输入收货信息</h4>
+      </div>
+      
+       <form action="${pageContext.request.contextPath}/cart/pay.action" method="post">
+           <div class="modal-body">
+        
+                <!-- 输入组 -->
+                <div class="input-group">
+                  <span class="input-group-addon">收货人&nbsp;<font color="red">*</font></span>
+                  <!-- required代表输入框为必填项 -->
+                  <input type="text" class="form-control" placeholder="请输入收货人" id="username" name="username" required value="${user.getName() }">
+                </div>
+                
+                <div style="margin-top:10px;"></div>
+                <div class="input-group">
+                  <span class="input-group-addon">收货电话&nbsp;<font color="red">*</font></span>
+                  <!-- required代表输入框为必填项 -->
+                  <input type="text" class="form-control" placeholder="请输入收货电话" id="phone" name="phone" required value="${user.getPhone() }">
+                </div>
+                
+                <div style="margin-top:10px;"></div>
+                <div class="input-group">
+                  <span class="input-group-addon">收货地址&nbsp;<font color="red">*</font></span>
+                  <!-- required代表输入框为必填项 -->
+                  <input type="text" class="form-control" placeholder="请输入收货地址" id="address" name="address" required value="${user.getAddress() }">
+                </div>
+                
+                <h1>请选择支付方式</h1>
+                <div class="input-group">
+                   <!-- 1代表微信支付  2代表支付宝支付 -->
+                   <input type="radio" name="paytype" value="1" checked="checked" />
+				   <img style="width:250px;height:250px;" src="../images/wechat.jpg" alt="微信支付">
+				   <input type="radio" name="paytype" value="2"/>
+				   <img style="width:270px;height:250px;" src="../images/alipay.jpg" alt="支付宝支付">
+                </div>
+                
+                <div style="margin-top:10px;"></div>
+                <h2>总金额：<span style="color:red;">¥ ${totalPrice }</span> </h2>
+                
+                <input type="hidden" value="${totalPrice }" name="total" id="total">
+         
+         </div>
+      <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+           <button type="submit" class="btn btn-primary">确认支付</button>
+      </div>
+      </form>
+      
+      
+    </div>
+  </div>
+</div>
+
+    
+<script type="text/javascript">
+var currentPage = '${currentPage}';//现在所在的页码
+var totalCount = '${totalCount}';//产品总数量
+var pageCount = '${pageCount}';//总页数
+
+//首页
+function pageHome(){
+	if (currentPage=='0'){
+        new $.zui.Messager("已经是首页!", {
+		   placement:'center',
+		   icon: 'bell',
+		   type: 'warning'
+		}).show();
+	}
+	else{
+		location.href = "${pageContext.request.contextPath}/cart/cartList.action?currentPage=0";
+	}
+}
+//上一页
+function pagePre(){
+	if (currentPage=='0'){
+		new $.zui.Messager("已经是第一页!", {
+			   placement:'center',
+			   icon: 'bell',
+			   type: 'warning'
+			}).show();
+	}
+	else{
+		location.href = '${pageContext.request.contextPath}/cart/cartList.action?currentPage='+(parseInt(currentPage)-1);
+	}
+}
+//下一页
+function pageNext(){
+	if (parseInt(currentPage)+1==pageCount){
+		new $.zui.Messager("已经是最后一页!", {
+			   placement:'center',
+			   icon: 'bell',
+			   type: 'warning'
+			}).show();
+	}
+	else{
+		location.href = '${pageContext.request.contextPath}/cart/cartList.action?currentPage='+(parseInt(currentPage)+1);
+	}
+}
+//尾页
+function pageEnd(){
+	if (parseInt(currentPage)+1==pageCount){
+		new $.zui.Messager("已经是最后一页!", {
+			   placement:'center',
+			   icon: 'bell',
+			   type: 'warning'
+			}).show();
+	}
+	else{
+		location.href = '${pageContext.request.contextPath}/cart/cartList.action?currentPage='+(parseInt(pageCount)-1);
+	}
+}
+
+function add(goodid){
+	console.log("goodid"+goodid);
+	location.href = '${pageContext.request.contextPath}/cart/add.action?goodid='+goodid;
+}
+
+function sub(goodid){
+	location.href = '${pageContext.request.contextPath}/cart/sub.action?goodid='+goodid;
+}
+
+function deleteGood(goodid){
+	//删除之前先询问
+	if(confirm("确定要删除此商品？")){
+		location.href = '${pageContext.request.contextPath}/cart/delete.action?goodid='+goodid;
+	}
+	
+}   
+
+</script>
+
+
+  	 
+</body>
+</html>

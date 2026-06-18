@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待取货订单</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 20px; font-weight: 600; }
+        header .user-info { display: flex; align-items: center; gap: 15px; }
+        header .user-info span { font-size: 14px; }
+        header .logout { background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; }
+        .tabs-container { background: white; margin: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .tabs { display: flex; border-bottom: 1px solid #eee; }
+        .tab { flex: 1; padding: 15px; text-align: center; font-size: 14px; color: #666; cursor: pointer; position: relative; }
+        .tab.active { color: #667eea; font-weight: 600; }
+        .tab.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 40px; height: 3px; background: #667eea; border-radius: 2px; }
+        .order-list { padding: 15px; }
+        .order-card { background: #fafafa; border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid #eee; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .order-id { font-size: 13px; color: #999; }
+        .order-status { font-size: 12px; padding: 4px 10px; border-radius: 20px; background: #e3f2fd; color: #1976d2; }
+        .order-info { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; }
+        .info-item { display: flex; align-items: center; gap: 5px; font-size: 14px; color: #333; }
+        .info-item svg { width: 16px; height: 16px; color: #999; }
+        .order-footer { display: flex; justify-content: space-between; align-items: center; }
+        .order-total { font-size: 16px; font-weight: 600; color: #e91e63; }
+        .btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4); }
+        footer { background: white; padding: 15px; display: flex; justify-content: space-around; border-top: 1px solid #eee; position: fixed; bottom: 0; left: 0; right: 0; }
+        .footer-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #999; cursor: pointer; }
+        .footer-item.active { color: #667eea; }
+        .footer-item svg { width: 24px; height: 24px; }
+        .footer-item span { font-size: 12px; }
+        .no-data { text-align: center; padding: 40px; color: #999; }
+        .badge { background: #ff5252; color: white; font-size: 11px; padding: 2px 6px; border-radius: 10px; margin-left: 5px; }
+        .stats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 20px; }
+        .stat-card { background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); cursor: pointer; transition: all 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .stat-card .number { font-size: 28px; font-weight: 700; color: #667eea; }
+        .stat-card .label { font-size: 13px; color: #999; margin-top: 5px; }
+        
+        /* ===== 夜间模式样式 ===== */
+        body.dark-mode { background: #1a1a2e; }
+        body.dark-mode .tabs-container { background: #16213e; }
+        body.dark-mode .tabs { border-bottom-color: #2d3436; }
+        body.dark-mode .tab { color: #666; }
+        body.dark-mode .order-card { background: #16213e; border-color: #2d3436; }
+        body.dark-mode .order-id { color: #666; }
+        body.dark-mode .info-item { color: #b3b3b3; }
+        body.dark-mode footer { background: #16213e; border-top-color: #2d3436; }
+        body.dark-mode .footer-item { color: #666; }
+        body.dark-mode .stat-card { background: #16213e; }
+        body.dark-mode .stat-card .label { color: #b3b3b3; }
+        body.dark-mode .no-data { color: #666; }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>待取货订单</h1>
+        <div class="user-info">
+            <span>[[${rider.name}]]</span>
+            <a href="/rider/logout" class="logout">退出</a>
+        </div>
+    </header>
+
+    <div class="stats-container">
+        <div class="stat-card" onclick="location.href='/rider/pendingOrders'">
+            <div class="number">[[${pendingCount}]]</div>
+            <div class="label">待接单</div>
+        </div>
+        <div class="stat-card" onclick="location.href='/rider/pickupOrders'">
+            <div class="number">[[${pickupCount}]]</div>
+            <div class="label">待取货</div>
+        </div>
+        <div class="stat-card" onclick="location.href='/rider/deliveringOrders'">
+            <div class="number">[[${deliveringCount}]]</div>
+            <div class="label">配送中</div>
+        </div>
+        <div class="stat-card" onclick="location.href='/rider/completedOrders'">
+            <div class="number">[[${completedCount}]]</div>
+            <div class="label">已完成</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">¥[(${totalCommission})]</div>
+            <div class="label">累计佣金</div>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <div class="tabs">
+            <div class="tab" onclick="location.href='/rider/pendingOrders'">待接单<span class="badge">[[${pendingCount}]]</span></div>
+            <div class="tab active">待取货<span class="badge">[[${pickupCount}]]</span></div>
+            <div class="tab" onclick="location.href='/rider/deliveringOrders'">配送中<span class="badge">[[${deliveringCount}]]</span></div>
+            <div class="tab" onclick="location.href='/rider/completedOrders'">已完成<span class="badge">[[${completedCount}]]</span></div>
+        </div>
+
+        <div class="order-list">
+            <div th:if="${orders == null || orders.isEmpty()}" class="no-data">
+                <p>暂无待取货订单</p>
+            </div>
+            <div th:each="order : ${orders}" class="order-card">
+                <div class="order-header">
+                    <span class="order-id">订单号: #[(${order.id})]</span>
+                    <span class="order-status">待取货</span>
+                </div>
+                <div class="order-info">
+                    <div class="info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9"/></svg>
+                        <span>[[${order.name}]]</span>
+                    </div>
+                    <div class="info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span>[[${order.address}]]</span>
+                    </div>
+                    <div class="info-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span>[[${order.phone}]]</span>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <span class="order-total">¥[[${order.total}]]</span>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" th:onclick="|location.href='/rider/orderDetail?id=${order.id}'|">查看详情</button>
+                        <button class="btn btn-primary" th:onclick="|location.href='/rider/confirmPickup?id=${order.id}'|">确认取货</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-item" onclick="location.href='/rider/index'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>首页</span>
+        </div>
+        <div class="footer-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9"/></svg>
+            <span>订单</span>
+        </div>
+        <div class="footer-item" onclick="location.href='/rider/profile'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>我的</span>
+        </div>
+    </footer>
+
+    <script>
+        // ===== 夜间模式和字体大小初始化 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // 夜间模式初始化
+            var nightMode = localStorage.getItem('nightMode');
+            if (nightMode === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // 字体大小初始化
+            var fontSize = localStorage.getItem('fontSize');
+            if (fontSize) {
+                document.documentElement.style.fontSize = fontSize + 'px';
+            }
+        });
+    </script>
+</body>
+</html>

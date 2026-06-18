@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品详情 - 蛋糕系统</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link type="text/css" rel="stylesheet" th:href="@{/css/main.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/zui.min.css}">
+    <script type="text/javascript" th:src="@{/js/jquery-3.0.0.js}"></script>
+    <script type="text/javascript" th:src="@{/js/zui.min.js}"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f8f4f0 0%, #f0ebe5 100%);
+            min-height: 100vh;
+        }
+
+        .detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* 商品卡片 - 玻璃质感 */
+        .detail-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(45, 24, 16, 0.12);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .detail-main {
+            display: flex;
+            padding: 40px;
+        }
+
+        /* 图片区域 */
+        .image-section {
+            flex: 1;
+            padding-right: 40px;
+        }
+
+        .main-image {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(45, 24, 16, 0.15);
+            margin-bottom: 20px;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .main-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .image-thumbs {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .thumb-item {
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .thumb-item:hover {
+            border-color: #C9A96E;
+            transform: translateY(-3px);
+        }
+
+        .thumb-item.active {
+            border-color: #C9A96E;
+            box-shadow: 0 4px 15px rgba(201, 169, 110, 0.3);
+        }
+
+        .thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 信息区域 */
+        .info-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-header {
+            margin-bottom: 30px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(201, 169, 110, 0.25);
+        }
+
+        .product-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d1810;
+            margin-bottom: 20px;
+        }
+
+        .product-intro {
+            font-size: 15px;
+            color: #8a6d5b;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            padding: 20px 24px;
+            background: rgba(245, 230, 211, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(201, 169, 110, 0.1);
+        }
+
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .price-label {
+            font-size: 18px;
+            color: #8a6d5b;
+            font-weight: 500;
+        }
+
+        .price-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2d1810;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .price-value span {
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stock-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 16px 20px;
+            background: rgba(245, 230, 211, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(201, 169, 110, 0.08);
+        }
+
+        .stock-label {
+            font-size: 16px;
+            color: #8a6d5b;
+            font-weight: 500;
+        }
+
+        .stock-value {
+            font-size: 22px;
+            font-weight: 600;
+            color: #A68B5C;
+        }
+
+        /* 操作区域 */
+        .actions-section {
+            margin-top: auto;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 16px 30px;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            font-family: 'Noto Sans SC', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .btn-add-cart {
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(201, 169, 110, 0.35);
+        }
+
+        .btn-add-cart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(201, 169, 110, 0.45);
+        }
+
+        .btn-add-cart:active {
+            transform: translateY(0);
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.9);
+            color: #8a6d5b;
+            border: 2px solid rgba(201, 169, 110, 0.3);
+        }
+
+        .btn-back:hover {
+            background: rgba(201, 169, 110, 0.1);
+            border-color: #C9A96E;
+            color: #A68B5C;
+            transform: translateY(-2px);
+        }
+
+        /* 详情标签 */
+        .detail-tabs {
+            margin-top: 40px;
+            padding: 40px 40px 0;
+            border-top: 1px solid rgba(201, 169, 110, 0.15);
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(201, 169, 110, 0.12);
+        }
+
+        .tab-item {
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #8a6d5b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+        }
+
+        .tab-item:hover {
+            color: #C9A96E;
+        }
+
+        .tab-item.active {
+            color: #A68B5C;
+            border-bottom-color: #C9A96E;
+        }
+
+        .tab-content {
+            font-size: 15px;
+            color: #6d5243;
+            line-height: 2;
+            padding: 24px 28px;
+            background: rgba(245, 230, 211, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(201, 169, 110, 0.08);
+            margin-bottom: 40px;
+        }
+
+        /* 相关推荐 */
+        .related-section {
+            margin-top: 50px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #2d1810;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #C9A96E, #A68B5C);
+            border-radius: 2px;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .related-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(45, 24, 16, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .related-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 35px rgba(45, 24, 16, 0.15);
+        }
+
+        .related-image {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .related-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .related-card:hover .related-image img {
+            transform: scale(1.08);
+        }
+
+        .related-info {
+            padding: 16px 18px;
+        }
+
+        .related-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d1810;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .related-price {
+            font-size: 20px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: #A68B5C;
+        }
+
+        /* 响应式 */
+        @media (max-width: 992px) {
+            .detail-main {
+                flex-direction: column;
+            }
+
+            .image-section {
+                padding-right: 0;
+                margin-bottom: 30px;
+            }
+
+            .main-image img {
+                height: 350px;
+            }
+
+            .product-name {
+                font-size: 28px;
+            }
+
+            .price-value {
+                font-size: 36px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+            }
+
+            .detail-tabs {
+                padding: 30px 20px 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .detail-main {
+                padding: 20px;
+            }
+
+            .main-image img {
+                height: 280px;
+            }
+
+            .product-name {
+                font-size: 24px;
+            }
+
+            .related-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <script th:inline="javascript">
+        $(function() {
+            var msg = [[${msg}]];
+            if (msg) {
+                new $.zui.Messager(msg, {
+                    icon: 'bell-alt',
+                    type: 'warning',
+                    placement: 'center'
+                }).show();
+            }
+        });
+    </script>
+
+    <div th:replace="admin/commons::topbar"></div>
+
+    <div class="detail-container">
+        <div class="detail-card">
+            <div class="detail-main">
+                <div class="image-section">
+                    <div class="main-image">
+                        <img th:src="${goodsList[0].cover}" alt="商品主图" id="mainImage">
+                    </div>
+                    <div class="image-thumbs">
+                        <div class="thumb-item active" th:data-src="${goodsList[0].cover}" onclick="changeMainImage(this)">
+                            <img th:src="${goodsList[0].cover}" alt="缩略图" onerror="this.src='/picture/default.jpg'">
+                        </div>
+                        <div class="thumb-item" th:data-src="${goodsList[0].image1}" onclick="changeMainImage(this)">
+                            <img th:src="${goodsList[0].image1}" alt="缩略图" onerror="this.src='/picture/default.jpg'">
+                        </div>
+                        <div class="thumb-item" th:data-src="${goodsList[0].image2}" onclick="changeMainImage(this)">
+                            <img th:src="${goodsList[0].image2}" alt="缩略图" onerror="this.src='/picture/default.jpg'">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-header">
+                        <span class="category-badge" th:text="${types != null && !types.isEmpty() ? types[0].name : '未分类'}"></span>
+                        <h1 class="product-name" th:text="${goodsList[0].name}"></h1>
+                        <p class="product-intro" th:text="${goodsList[0].intro}"></p>
+                    </div>
+
+                    <div class="price-row">
+                        <span class="price-label">价格：</span>
+                        <span class="price-value">¥<span th:text="${goodsList[0].price}"></span></span>
+                    </div>
+
+                    <div class="stock-row">
+                        <span class="stock-label">库存：</span>
+                        <span class="stock-value"><span th:text="${goodsList[0].stock}"></span> 件</span>
+                    </div>
+
+                    <div class="actions-section">
+                        <div class="action-buttons">
+                            <button class="btn-action btn-add-cart" th:onclick="'addToCart(' + ${goodsList[0].id} + ')'">加入购物车</button>
+                            <a th:href="@{/goods/goodsList}" class="btn-action btn-back">返回首页</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-tabs">
+                <div class="tabs-header">
+                    <div class="tab-item active" onclick="showTab('desc')">商品描述</div>
+                    <div class="tab-item" onclick="showTab('spec')">规格参数</div>
+                    <div class="tab-item" onclick="showTab('service')">售后服务</div>
+                </div>
+                <div class="tab-content" id="desc">
+                    <p th:text="${goodsList[0].intro}"></p>
+                    <p style="margin-top:20px;">精心挑选优质原料，匠心制作每一款产品。我们坚持使用新鲜食材，为您呈现最美味的蛋糕体验。</p>
+                </div>
+                <div class="tab-content" id="spec" style="display:none;">
+                    <p><strong>品牌：</strong>蛋糕系统</p>
+                    <p><strong>规格：</strong>标准尺寸</p>
+                    <p><strong>保质期：</strong>冷藏3天</p>
+                    <p><strong>储存条件：</strong>2-8℃冷藏保存</p>
+                </div>
+                <div class="tab-content" id="service" style="display:none;">
+                    <p><strong>配送服务：</strong>支持全国配送，下单后24小时内发货</p>
+                    <p><strong>退换政策：</strong>收货后7天内可退换</p>
+                    <p><strong>售后服务：</strong>24小时客服在线</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="related-section">
+            <h2 class="section-title">相关推荐</h2>
+            <div class="related-grid">
+                <div th:each="goods : ${goodsList}" class="related-card">
+                    <div class="related-image">
+                        <img th:src="${goods.cover}" alt="推荐商品">
+                    </div>
+                    <div class="related-info">
+                        <h4 class="related-name" th:text="${goods.name}"></h4>
+                        <p class="related-price">¥<span th:text="${goods.price}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="admin/commons::footbar"></div>
+
+    <script type="text/javascript">
+        function changeMainImage(thumb) {
+            var src = thumb.getAttribute('data-src');
+            document.getElementById('mainImage').src = src;
+            var thumbs = document.querySelectorAll('.thumb-item');
+            thumbs.forEach(function(t) {
+                t.classList.remove('active');
+            });
+            thumb.classList.add('active');
+        }
+
+        function showTab(tabId) {
+            var tabs = document.querySelectorAll('.tab-item');
+            var contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            contents.forEach(function(content) {
+                content.style.display = 'none';
+            });
+            
+            event.target.classList.add('active');
+            document.getElementById(tabId).style.display = 'block';
+        }
+
+        function addToCart(id) {
+            location.href = "[[@{/cart/addToCart}]]?id=" + id;
+        }
+    </script>
+</body>
+</html>

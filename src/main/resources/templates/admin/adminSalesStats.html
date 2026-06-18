@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div th:fragment="content">
+        <h2 style="font-size: 22px; font-weight: 600; color: #2c3e50; margin-bottom: 24px;">📊 销售数据统计</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 12px; color: #fff; position: relative; overflow: hidden;">
+                <span style="font-size: 36px;">👥</span>
+                <div style="font-size: 36px; font-weight: 700; margin: 15px 0 8px;">[[${activeUserCount}]]</div>
+                <div style="font-size: 15px; opacity: 0.9;">用户总数</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 12px; color: #fff; position: relative; overflow: hidden;">
+                <span style="font-size: 36px;">📦</span>
+                <div style="font-size: 36px; font-weight: 700; margin: 15px 0 8px;">[[${monthOrderCount}]]</div>
+                <div style="font-size: 15px; opacity: 0.9;">本月订单数</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 12px; color: #fff; position: relative; overflow: hidden;">
+                <span style="font-size: 36px;">💰</span>
+                <div style="font-size: 36px; font-weight: 700; margin: 15px 0 8px;">¥[[${monthSalesAmount}]]</div>
+                <div style="font-size: 15px; opacity: 0.9;">本月销售额</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 12px; color: #fff; position: relative; overflow: hidden;">
+                <span style="font-size: 36px;">✨</span>
+                <div style="font-size: 36px; font-weight: 700; margin: 15px 0 8px;">[[${todayRegisterCount}]]</div>
+                <div style="font-size: 15px; opacity: 0.9;">今日注册用户</div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 25px;">
+            <div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <h4 style="font-size: 16px; color: #333; margin-bottom: 20px;">📈 订单状态分布</h4>
+                <div id="pieChart" style="width: 100%; height: 280px;"></div>
+            </div>
+            <div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <h4 style="font-size: 16px; color: #333; margin-bottom: 20px;">📊 堆叠柱状图</h4>
+                <div id="barChart" style="width: 100%; height: 280px;"></div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 25px;">
+            <div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <h4 style="font-size: 16px; color: #333; margin-bottom: 20px;">📉 销售趋势线图</h4>
+                <div id="lineChart" style="width: 100%; height: 280px;"></div>
+            </div>
+            <div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <h4 style="font-size: 16px; color: #333; margin-bottom: 20px;">🎯 销售能力雷达图</h4>
+                <div id="radarChart" style="width: 100%; height: 280px;"></div>
+            </div>
+        </div>
+        
+        <div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+            <h4 style="font-size: 16px; color: #333; margin-bottom: 20px;">🏆 热销商品排行</h4>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background: #f8f9fa;">
+                    <th style="padding: 12px 18px; text-align: left; font-weight: 600; font-size: 14px; color: #495057;">排名</th>
+                    <th style="padding: 12px 18px; text-align: left; font-weight: 600; font-size: 14px; color: #495057;">商品名称</th>
+                    <th style="padding: 12px 18px; text-align: left; font-weight: 600; font-size: 14px; color: #495057;">销量</th>
+                    <th style="padding: 12px 18px; text-align: left; font-weight: 600; font-size: 14px; color: #495057;">销售额</th>
+                </tr>
+                <tr><td style="padding: 12px 18px; border-bottom: 1px solid #eee;">1</td><td style="padding: 12px 18px; border-bottom: 1px solid #eee;">草莓蛋糕</td><td style="padding: 12px 18px; border-bottom: 1px solid #eee;">35</td><td style="padding: 12px 18px; border-bottom: 1px solid #eee; color: #e74c3c;">¥8,750</td></tr>
+                <tr><td style="padding: 12px 18px; border-bottom: 1px solid #eee;">2</td><td style="padding: 12px 18px; border-bottom: 1px solid #eee;">巧克力慕斯</td><td style="padding: 12px 18px; border-bottom: 1px solid #eee;">28</td><td style="padding: 12px 18px; border-bottom: 1px solid #eee; color: #e74c3c;">¥5,600</td></tr>
+                <tr><td style="padding: 12px 18px; border-bottom: 1px solid #eee;">3</td><td style="padding: 12px 18px; border-bottom: 1px solid #eee;">提拉米苏</td><td style="padding: 12px 18px; border-bottom: 1px solid #eee;">22</td><td style="padding: 12px 18px; border-bottom: 1px solid #eee; color: #e74c3c;">¥3,520</td></tr>
+                <tr><td style="padding: 12px 18px;">4</td><td style="padding: 12px 18px;">抹茶千层</td><td style="padding: 12px 18px;">18</td><td style="padding: 12px 18px; color: #e74c3c;">¥4,500</td></tr>
+            </table>
+        </div>
+
+        <script type="text/javascript">
+            function initCharts() {
+                var pieEl = document.getElementById('pieChart');
+                var barEl = document.getElementById('barChart');
+                var lineEl = document.getElementById('lineChart');
+                var radarEl = document.getElementById('radarChart');
+                
+                if (!pieEl || !barEl || !lineEl || !radarEl) {
+                    setTimeout(initCharts, 100);
+                    return;
+                }
+                
+                var pieChart = echarts.init(pieEl);
+                pieChart.setOption({
+                    tooltip: { trigger: 'item' },
+                    legend: { top: '5%', left: 'center' },
+                    series: [{
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+                        label: { show: false },
+                        emphasis: { label: { show: true, fontSize: 20, fontWeight: 'bold', formatter: '{b}\n{c}' } },
+                        data: [
+                            { value: [[${paidCount}]], name: '已付款', itemStyle: { color: '#667eea' } },
+                            { value: [[${unpaidCount}]], name: '待付款', itemStyle: { color: '#ff9800' } },
+                            { value: [[${deliveredCount}]], name: '已完成', itemStyle: { color: '#4caf50' } }
+                        ]
+                    }]
+                });
+                
+                var barSeries = [
+                    { data: [120, 200, 150, 80, 70, 110, 130], type: 'bar', stack: 'a', name: '订单数', itemStyle: { color: '#667eea' } },
+                    { data: [10, 46, 64, '-', 0, '-', 0], type: 'bar', stack: 'a', name: '销售额', itemStyle: { color: '#f7b733' } },
+                    { data: [30, '-', 0, 20, 10, '-', 0], type: 'bar', stack: 'a', name: '已完成', itemStyle: { color: '#38ef7d' } },
+                    { data: [30, '-', 0, 20, 10, '-', 0], type: 'bar', stack: 'b', name: '待发货', itemStyle: { color: '#e74c3c' } },
+                    { data: [10, 20, 150, 0, '-', 50, 10], type: 'bar', stack: 'b', name: '退换货', itemStyle: { color: '#9b59b6' } }
+                ];
+                var stackInfo = {};
+                for (var i = 0; i < barSeries[0].data.length; ++i) {
+                    for (var j = 0; j < barSeries.length; ++j) {
+                        var stackName = barSeries[j].stack;
+                        if (!stackName) continue;
+                        if (!stackInfo[stackName]) stackInfo[stackName] = { stackStart: [], stackEnd: [] };
+                        var info = stackInfo[stackName];
+                        var data = barSeries[j].data[i];
+                        if (data && data !== '-') {
+                            if (info.stackStart[i] == null) info.stackStart[i] = j;
+                            info.stackEnd[i] = j;
+                        }
+                    }
+                }
+                for (var i = 0; i < barSeries.length; ++i) {
+                    var data = barSeries[i].data;
+                    var info = stackInfo[barSeries[i].stack];
+                    for (var j = 0; j < barSeries[i].data.length; ++j) {
+                        var isEnd = info.stackEnd[j] === i;
+                        data[j] = { value: data[j], itemStyle: { borderRadius: [isEnd ? 6 : 0, isEnd ? 6 : 0, 0, 0] } };
+                    }
+                }
+                var barChart = echarts.init(barEl);
+                barChart.setOption({
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                    legend: { data: ['订单数', '销售额', '已完成', '待发货', '退换货'], top: '5%', left: 'center' },
+                    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                    xAxis: { type: 'category', data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] },
+                    yAxis: { type: 'value' },
+                    series: barSeries
+                });
+                
+                var lineChart = echarts.init(lineEl);
+                lineChart.setOption({
+                    tooltip: { trigger: 'axis' },
+                    legend: { data: ['销售额', '订单数', '用户增长'], top: '5%', left: 'center' },
+                    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                    xAxis: { type: 'category', boundaryGap: false, data: ['1日', '2日', '3日', '4日', '5日', '6日', '7日'] },
+                    yAxis: { type: 'value' },
+                    series: [
+                        {
+                            name: '销售额',
+                            type: 'line',
+                            data: [12000, 19000, 15000, 8000, 7000, 11000, 13000],
+                            smooth: true,
+                            lineStyle: { width: 3, color: '#667eea' },
+                            itemStyle: { color: '#667eea' },
+                            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(102, 126, 234, 0.3)' }, { offset: 1, color: 'rgba(102, 126, 234, 0.05)' }]) }
+                        },
+                        {
+                            name: '订单数',
+                            type: 'line',
+                            data: [45, 78, 62, 35, 28, 52, 48],
+                            smooth: true,
+                            lineStyle: { width: 3, color: '#f7b733' },
+                            itemStyle: { color: '#f7b733' },
+                            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(247, 183, 51, 0.3)' }, { offset: 1, color: 'rgba(247, 183, 51, 0.05)' }]) }
+                        },
+                        {
+                            name: '用户增长',
+                            type: 'line',
+                            data: [12, 18, 15, 8, 10, 14, 16],
+                            smooth: true,
+                            lineStyle: { width: 3, color: '#4caf50' },
+                            itemStyle: { color: '#4caf50' },
+                            areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(76, 175, 80, 0.3)' }, { offset: 1, color: 'rgba(76, 175, 80, 0.05)' }]) }
+                        }
+                    ]
+                });
+                
+                var radarChart = echarts.init(radarEl);
+                radarChart.setOption({
+                    tooltip: { trigger: 'item' },
+                    legend: { data: ['本月数据', '上月数据'], top: '5%', left: 'center' },
+                    radar: {
+                        indicator: [
+                            { name: '销售额', max: 65000 },
+                            { name: '订单数', max: 100 },
+                            { name: '用户增长', max: 50 },
+                            { name: '商品销量', max: 200 },
+                            { name: '客单价', max: 500 },
+                            { name: '转化率', max: 100 }
+                        ]
+                    },
+                    series: [{
+                        name: '销售能力对比',
+                        type: 'radar',
+                        data: [
+                            { value: [42000, 78, 35, 156, 380, 78], name: '本月数据', itemStyle: { color: '#667eea' }, areaStyle: { color: 'rgba(102, 126, 234, 0.3)' } },
+                            { value: [35000, 65, 28, 128, 320, 65], name: '上月数据', itemStyle: { color: '#f7b733' }, areaStyle: { color: 'rgba(247, 183, 51, 0.3)' } }
+                        ]
+                    }]
+                });
+                
+                window.addEventListener('resize', function() {
+                    pieChart.resize();
+                    barChart.resize();
+                    lineChart.resize();
+                    radarChart.resize();
+                    lineChart.resize();
+                });
+            }
+            initCharts();
+        </script>
+    </div>
+</body>
+</html>

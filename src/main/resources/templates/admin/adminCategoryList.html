@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            .category-count {
+                font-size: 14px;
+                color: #8a6d5b;
+                margin-top: 4px;
+            }
+            .category-count span {
+                color: #C9A96E;
+                font-weight: 700;
+            }
+            .action-group {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+            }
+            .action-link {
+                display: inline-flex;
+                align-items: center;
+                padding: 6px 14px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-size: 13px;
+                font-weight: 500;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                cursor: pointer;
+            }
+            .action-link:hover {
+                transform: translateY(-1px);
+            }
+            .action-link.edit {
+                background: linear-gradient(135deg, #27ae60, #2ecc71);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+            }
+            .action-link.edit:hover {
+                box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+            }
+            .action-link.del {
+                background: linear-gradient(135deg, #c0392b, #e74c3c);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(192, 57, 43, 0.2);
+            }
+            .action-link.del:hover {
+                box-shadow: 0 6px 20px rgba(192, 57, 43, 0.3);
+            }
+            .record-count {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 16px;
+                padding: 14px 24px;
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(20px);
+                border-radius: 14px;
+                margin-top: 25px;
+                box-shadow: 0 4px 20px rgba(45, 24, 16, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                color: #8a6d5b;
+                font-size: 14px;
+            }
+            .record-count em {
+                font-style: normal;
+                color: #C9A96E;
+                font-weight: 700;
+            }
+            .empty-state {
+                padding: 50px;
+                text-align: center;
+                color: #b8a99a;
+                font-size: 15px;
+            }
+        </style>
+
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">分类管理</h2>
+                <div class="category-count">管理商品分类，支持添加、编辑和删除</div>
+            </div>
+            <a th:href="@{/admin/addType}" class="btn btn-success">+ 添加分类</a>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 100px;">ID</th>
+                    <th>分类名称</th>
+                    <th style="text-align:center; width: 200px;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="type : ${typeList}">
+                    <td style="font-weight:500; color:#8a6d5b;">[[${type.id}]]</td>
+                    <td style="font-weight:500; color:#2d1810;">[[${type.name}]]</td>
+                    <td style="text-align:center;">
+                        <div class="action-group">
+                            <a th:href="@{/admin/editType(id=${type.id})}" class="action-link edit">编辑</a>
+                            <a th:href="@{/admin/deleteType(id=${type.id})}" 
+                               onclick="return confirm('确定要删除该分类吗？')" class="action-link del">删除</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(typeList)}">
+                    <td colspan="3" class="empty-state">暂无分类数据</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="record-count">
+            <span>总共 <em>[[${#lists.size(typeList)}]]</em> 条记录</span>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            .goods-count {
+                font-size: 14px;
+                color: #8a6d5b;
+                margin-top: 4px;
+            }
+            .goods-count span {
+                color: #C9A96E;
+                font-weight: 700;
+            }
+            .category-tag {
+                display: inline-block;
+                padding: 4px 14px;
+                background: rgba(201, 169, 110, 0.12);
+                color: #A68B5C;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            .action-link {
+                display: inline-flex;
+                align-items: center;
+                padding: 6px 14px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-size: 13px;
+                font-weight: 500;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                cursor: pointer;
+            }
+            .action-link:hover {
+                transform: translateY(-1px);
+            }
+            .action-link.view {
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(201, 169, 110, 0.25);
+            }
+            .action-link.view:hover {
+                box-shadow: 0 6px 20px rgba(201, 169, 110, 0.35);
+            }
+            .action-link.edit {
+                background: linear-gradient(135deg, #27ae60, #2ecc71);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+            }
+            .action-link.edit:hover {
+                box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+            }
+            .action-link.del {
+                background: linear-gradient(135deg, #c0392b, #e74c3c);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(192, 57, 43, 0.2);
+            }
+            .action-link.del:hover {
+                box-shadow: 0 6px 20px rgba(192, 57, 43, 0.3);
+            }
+            .action-group {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+            }
+            .pagination-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 16px;
+                padding: 14px 24px;
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(20px);
+                border-radius: 14px;
+                margin-top: 25px;
+                box-shadow: 0 4px 20px rgba(45, 24, 16, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.6);
+            }
+            .pagination-container .page-info {
+                color: #8a6d5b;
+                font-size: 14px;
+                font-weight: 500;
+            }
+            .pagination-container .page-info em {
+                font-style: normal;
+                color: #C9A96E;
+                font-weight: 700;
+            }
+            .pagination-nav {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .pagination-nav a {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                text-decoration: none;
+                color: #8a6d5b;
+                font-size: 20px;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(0, 0, 0, 0.06);
+                background: rgba(255, 255, 255, 0.6);
+            }
+            .pagination-nav a:hover:not(.disabled) {
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                border-color: transparent;
+                box-shadow: 0 4px 12px rgba(201, 169, 110, 0.3);
+                transform: translateY(-1px);
+            }
+            .pagination-nav a.disabled {
+                opacity: 0.35;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+            .pagination-nav .current-page {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 36px;
+                height: 36px;
+                font-size: 16px;
+                font-weight: 700;
+                color: #2d1810;
+                border-bottom: 2px solid #C9A96E;
+                padding-bottom: 2px;
+            }
+            
+            /* 夜间模式样式 */
+            body.night-mode .goods-count {
+                color: #a09080;
+            }
+            
+            body.night-mode .goods-count span {
+                color: #C9A96E;
+            }
+            
+            body.night-mode .category-tag {
+                background: rgba(201, 169, 110, 0.15);
+                color: #c0b5a8;
+            }
+            
+            body.night-mode .pagination-container {
+                background: rgba(30, 30, 45, 0.92);
+                border-color: rgba(255, 255, 255, 0.06);
+            }
+            
+            body.night-mode .pagination-container .page-info {
+                color: #a09080;
+            }
+            
+            body.night-mode .pagination-nav a {
+                background: rgba(40, 40, 55, 0.8);
+                border-color: rgba(255, 255, 255, 0.08);
+                color: #a09080;
+            }
+            
+            body.night-mode .pagination-nav a:hover:not(.disabled) {
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+            }
+            
+            body.night-mode .pagination-nav .current-page {
+                color: #e0d5c8;
+            }
+        </style>
+
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">商品列表</h2>
+                <p class="goods-count">共 <span>[[${totalCount}]]</span> 件商品</p>
+            </div>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" th:value="${keyword}" placeholder="搜索商品名称或ID..." onkeypress="if(event.keyCode==13){event.preventDefault();searchGoods();}">
+            <button onclick="searchGoods()" class="btn btn-primary">搜索</button>
+            <button onclick="resetSearch()" class="btn" style="background: linear-gradient(135deg, #95a5a6, #7f8c8d); color: #fff; box-shadow: 0 4px 15px rgba(127, 140, 141, 0.2);">重置</button>
+            <a th:href="@{/admin/addGoods}" class="btn btn-success">+ 添加商品</a>
+        </div>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>商品ID</th>
+                    <th>商品名称</th>
+                    <th style="text-align:center;">价格</th>
+                    <th style="text-align:center;">库存</th>
+                    <th style="text-align:center;">类别</th>
+                    <th style="text-align:center;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="goods : ${goodsList}">
+                    <td style="font-weight:500; color:#8a6d5b;">[[${goods.id}]]</td>
+                    <td style="font-weight:500; color:#2d1810;">[[${goods.name}]]</td>
+                    <td style="text-align:center; color:#c0392b; font-weight:600;">¥[[${goods.price}]]</td>
+                    <td style="text-align:center; color:#27ae60; font-weight:500;">[[${goods.stock}]]</td>
+                    <td style="text-align:center;">
+                        <span class="category-tag">[[${goods.typeName}]]</span>
+                    </td>
+                    <td style="text-align:center;">
+                        <div class="action-group">
+                            <a th:href="@{/admin/goodsDetail(id=${goods.id})}" class="action-link view">查看详情</a>
+                            <a th:href="@{/admin/editGoods(id=${goods.id})}" class="action-link edit">编辑</a>
+                            <a th:href="@{/admin/deleteGoods(id=${goods.id})}" 
+                               onclick="return confirm('确定要删除该商品吗？')" class="action-link del">删除</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${goodsList == null or #lists.isEmpty(goodsList)}">
+                    <td colspan="6" style="padding: 50px; text-align: center; color: #b8a99a;">暂无商品数据</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="pagination-container" style="margin-top: 28px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <span style="color: #8a6d5b; margin-right: 10px;">共 <strong>[[${totalCount}]]</strong> 件</span>
+            
+            <a th:if="${currentPage > 1}" 
+               th:href="@{/admin/goodsList(page=${currentPage - 1}, keyword=${keyword})}" 
+               style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: #fff;">上一页</a>
+            
+            <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+               th:href="@{/admin/goodsList(page=${i}, keyword=${keyword})}"
+               th:style="${i == currentPage ? 'padding: 8px 16px; border-radius: 4px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none;' : 'padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: #fff;'"
+               th:text="${i}">1</a>
+            
+            <a th:if="${currentPage < totalPages}" 
+               th:href="@{/admin/goodsList(page=${currentPage + 1}, keyword=${keyword})}" 
+               style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: #fff;">下一页</a>
+            
+            <span style="color: #8a6d5b; margin-left: 10px;">共 <strong>[[${totalPages}]]</strong> 页</span>
+        </div>
+        
+        <script>
+            function searchGoods() {
+                var keyword = document.getElementById('searchInput').value;
+                var url = '/admin/goodsList?keyword=' + encodeURIComponent(keyword);
+                if (typeof loadPage === 'function') {
+                    loadPage(url);
+                } else {
+                    location.href = url;
+                }
+            }
+            
+            function resetSearch() {
+                document.getElementById('searchInput').value = '';
+                var url = '/admin/goodsList';
+                if (typeof loadPage === 'function') {
+                    loadPage(url);
+                } else {
+                    location.href = url;
+                }
+            }
+            
+            function goPage(page) {
+                var keyword = document.getElementById('searchInput').value;
+                var url = '/admin/goodsList?page=' + page;
+                if (keyword) {
+                    url += '&keyword=' + encodeURIComponent(keyword);
+                }
+                if (typeof loadPage === 'function') {
+                    loadPage(url);
+                } else {
+                    location.href = url;
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>订单详情 - 奶茶店系统</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/main.css}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');    
+
+        body {
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f8f4f0 0%, #f0ebe5 100%);      
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .detail-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(45, 24, 16, 0.08);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .detail-header {
+            padding: 30px 32px;
+            background: linear-gradient(135deg, rgba(201, 169, 110, 0.15), rgba(166, 139, 92, 0.1));
+            border-bottom: 1px solid rgba(201, 169, 110, 0.15);
+        }
+
+        .detail-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #2d1810;
+            margin: 0 0 15px 0;
+            font-weight: 700;
+        }
+
+        .order-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            font-size: 14px;
+            color: #8a6d5b;
+        }
+
+        .order-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .order-meta span strong {
+            color: #5a3a28;
+            font-weight: 600;
+        }
+
+        .order-status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(201, 169, 110, 0.2);
+            color: #A68B5C;
+        }
+
+        .order-status.shipped {
+            background: rgba(230, 180, 80, 0.15);
+            color: #b8860b;
+        }
+
+        .order-status.completed {
+            background: rgba(166, 139, 92, 0.15);
+            color: #6d8c4a;
+        }
+
+        .order-status.cancelled {
+            background: rgba(192, 57, 43, 0.1);
+            color: #c0392b;
+        }
+
+        .order-status.pickup {
+            background: rgba(52, 152, 219, 0.15);
+            color: #2980b9;
+        }
+
+        .order-status.delivering {
+            background: rgba(155, 89, 182, 0.15);
+            color: #8e44ad;
+        }
+
+        .detail-section {
+            padding: 24px 32px;
+            border-bottom: 1px solid rgba(201, 169, 110, 0.08);
+        }
+
+        .detail-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #5a3a28;
+            margin-bottom: 16px;
+            padding-left: 12px;
+            border-left: 3px solid #C9A96E;
+        }
+
+        .receiver-info p {
+            margin: 8px 0;
+            font-size: 15px;
+            color: #5a3a28;
+        }
+
+        .receiver-info p span {
+            color: #8a6d5b;
+            margin-left: 8px;
+        }
+
+        .order-items {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .order-item {
+            display: flex;
+            padding: 16px;
+            background: rgba(245, 230, 211, 0.2);
+            border-radius: 12px;
+        }
+
+        .item-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-info {
+            flex: 1;
+            padding-left: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d1810;
+            margin-bottom: 6px;
+        }
+
+        .item-price {
+            font-size: 14px;
+            color: #A68B5C;
+            font-weight: 600;
+        }
+
+        .item-qty {
+            font-size: 14px;
+            color: #8a6d5b;
+            margin-left: 12px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            font-size: 15px;
+            color: #5a3a28;
+        }
+
+        .summary-row.total {
+            font-size: 20px;
+            font-weight: 700;
+            color: #A68B5C;
+            font-family: 'Playfair Display', serif;
+            padding-top: 20px;
+            border-top: 1px dashed rgba(201, 169, 110, 0.2);
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            background: rgba(245, 230, 211, 0.6);
+            color: #8a6d5b;
+            border: 1px solid rgba(201, 169, 110, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(245, 230, 211, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .action-bar {
+            padding: 24px 32px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .order-meta {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .order-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .item-info {
+                padding-left: 0;
+                padding-top: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:if="${not #strings.isEmpty(msg)}">
+        <script>
+            alert('[[${msg}]]');
+        </script>
+    </div>
+
+    <div th:replace="admin/commons::topbar"></div>
+
+    <div class="detail-container">
+        <div class="detail-card" th:if="${order != null}">
+            <div class="detail-header">
+                <h2>订单详情</h2>
+                <div class="order-meta">
+                    <span>订单号：<strong>#[[${order.id}]]</strong></span>
+                    <span>下单时间：[[${order.datetime}]]</span>
+                    <span th:class="'order-status ' + ${order.status == 2 ? '' : (order.status == 3 ? 'shipped' : (order.status == 5 ? 'cancelled' : (order.status == 6 ? 'pickup' : (order.status == 7 ? 'delivering' : 'completed'))))}">
+                        [[${statusText}]]
+                    </span>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="section-title">收货信息</div>
+                <div class="receiver-info">
+                    <p>收货人：<span th:text="${order.name}"></span></p>
+                    <p>联系电话：<span th:text="${order.phone}"></span></p>
+                    <p>收货地址：<span th:text="${order.address}"></span></p>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="section-title">商品清单</div>
+                <div class="order-items">
+                    <div th:each="item : ${order.items}" class="order-item">
+                        <div class="item-image">
+                            <img th:src="@{${item.goodsCover}}" alt="商品图片" />
+                        </div>
+                        <div class="item-info">
+                            <span class="item-name" th:text="${item.goodsName}"></span>
+                            <span class="item-price">¥[[${item.price}]]</span>
+                            <span class="item-qty">x[[${item.amount}]]</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="summary-row">
+                    <span>商品数量</span>
+                    <span>[[${order.amount}]] 件</span>
+                </div>
+                <div class="summary-row">
+                    <span>运费</span>
+                    <span>免运费</span>
+                </div>
+                <div class="summary-row total">
+                    <span>订单总额</span>
+                    <span>¥[[${order.total}]]</span>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <a href="/order/myOrders" class="btn btn-secondary">返回订单列表</a>
+            </div>
+        </div>
+
+        <div th:if="${order == null}" style="text-align: center; padding: 80px 40px; background: rgba(255, 255, 255, 0.92); border-radius: 20px;">
+            <p style="font-size: 18px; color: #8a6d5b;">订单不存在或已删除</p>
+            <a href="/order/myOrders" class="btn btn-secondary" style="margin-top: 20px;">返回订单列表</a>
+        </div>
+    </div>
+
+    <div th:replace="admin/commons::footbar"></div>
+</body>
+</html>

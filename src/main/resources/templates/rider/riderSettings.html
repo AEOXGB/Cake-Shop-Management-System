@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - 骑手端</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <style>
+        html { font-size: 16px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 1.125rem; font-weight: 500; }
+        .back-btn { color: white; text-decoration: none; font-size: 0.875rem; }
+        .content { padding: 1.25rem; max-width: 50rem; margin: 0 auto; }
+        .setting-card { background: white; border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1.25rem; box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,0.06); }
+        .card-title { font-size: 1rem; font-weight: 600; color: #333; margin-bottom: 1.25rem; padding-bottom: 0.9375rem; border-bottom: 1px solid #eee; }
+        .form-group { margin-bottom: 0.9375rem; }
+        .form-group label { display: block; font-size: 0.875rem; color: #666; margin-bottom: 0.5rem; }
+        .form-group input { width: 100%; padding: 0.75rem 0.9375rem; border: 1px solid #ddd; border-radius: 0.5rem; font-size: 0.875rem; }
+        .form-group input:focus { outline: none; border-color: #667eea; }
+        .btn { width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 0.5rem; font-size: 1rem; cursor: pointer; }
+        .btn:hover { opacity: 0.9; }
+        .msg { padding: 0.75rem; margin-bottom: 0.9375rem; border-radius: 0.5rem; text-align: center; }
+        .msg.success { background: #d4edda; color: #155724; }
+        .msg.error { background: #f8d7da; color: #721c24; }
+        .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 0.9375rem 0; border-bottom: 1px solid #f5f5f5; }
+        .setting-item:last-child { border-bottom: none; }
+        .setting-item .info { flex: 1; }
+        .setting-item .info .title { font-size: 0.9375rem; color: #333; }
+        .setting-item .info .desc { font-size: 0.75rem; color: #999; margin-top: 0.3125rem; }
+        .toggle-switch { position: relative; width: 3.125rem; height: 1.75rem; background: #ddd; border-radius: 0.875rem; cursor: pointer; transition: background 0.3s; }
+        .toggle-switch.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .toggle-switch .toggle-dot { position: absolute; top: 0.25rem; left: 0.25rem; width: 1.25rem; height: 1.25rem; background: white; border-radius: 50%; transition: left 0.3s; }
+        .toggle-switch.active .toggle-dot { left: 1.625rem; }
+        .font-size-control { display: flex; align-items: center; gap: 0.9375rem; }
+        .font-btn { width: 2.5rem; height: 2.5rem; border: 1px solid #ddd; border-radius: 0.5rem; background: white; font-size: 1rem; cursor: pointer; }
+        .font-btn:hover { border-color: #667eea; }
+        .font-display { font-size: 1rem; color: #666; min-width: 3.75rem; text-align: center; }
+        footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 0.625rem 0; box-shadow: 0 -0.125rem 0.625rem rgba(0,0,0,0.05); }
+        .footer-item { display: flex; flex-direction: column; align-items: center; gap: 0.3125rem; color: #999; cursor: pointer; }
+        .footer-item.active { color: #667eea; }
+        .footer-item svg { width: 1.5rem; height: 1.5rem; }
+        .footer-item span { font-size: 0.75rem; }
+        body.dark-mode { background: #1a1a2e; }
+        body.dark-mode .setting-card { background: #16213e; }
+        body.dark-mode .card-title { color: #fff; }
+        body.dark-mode .setting-item { border-bottom-color: #2d3436; }
+        body.dark-mode .setting-item .info .title { color: #fff; }
+        body.dark-mode .setting-item .info .desc { color: #b3b3b3; }
+        body.dark-mode .form-group label { color: #b3b3b3; }
+        body.dark-mode .form-group input { background: #2d3436; border-color: #4a4a4a; color: #fff; }
+        body.dark-mode footer { background: #16213e; }
+        body.dark-mode .font-btn { background: #2d3436; border-color: #4a4a4a; color: #fff; }
+        body.dark-mode .font-display { color: #b3b3b3; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/rider/profile" class="back-btn">← 返回</a>
+        <h1>⚙️ 设置</h1>
+        <span></span>
+    </header>
+
+    <div class="content">
+        <div class="setting-card">
+            <div class="card-title">修改密码</div>
+            <form action="/rider/changePassword" method="post">
+                <div class="form-group">
+                    <label>原密码</label>
+                    <input type="password" name="oldPassword" placeholder="请输入原密码" required>
+                </div>
+                <div class="form-group">
+                    <label>新密码</label>
+                    <input type="password" name="newPassword" placeholder="请输入新密码" required>
+                </div>
+                <div class="form-group">
+                    <label>确认密码</label>
+                    <input type="password" name="confirmPassword" placeholder="请再次输入新密码" required>
+                </div>
+                <button type="submit" class="btn">确认修改</button>
+            </form>
+            <div th:if="${msg != null}" th:classappend="${msg.contains('成功') ? 'msg success' : 'msg error'}">
+                [[${msg}]]
+            </div>
+        </div>
+
+        <div class="setting-card">
+            <div class="card-title">显示设置</div>
+            <div class="setting-item">
+                <div class="info">
+                    <div class="title">夜间模式</div>
+                    <div class="desc">开启后切换深色主题</div>
+                </div>
+                <div class="toggle-switch" id="nightModeToggle">
+                    <div class="toggle-dot"></div>
+                </div>
+            </div>
+            <div class="setting-item">
+                <div class="info">
+                    <div class="title">字体大小</div>
+                    <div class="desc">调整界面字体大小</div>
+                </div>
+                <div class="font-size-control">
+                    <button class="font-btn" id="fontDecrease">-</button>
+                    <div class="font-display" id="fontSizeDisplay">16px</div>
+                    <button class="font-btn" id="fontIncrease">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-item" onclick="location.href='/rider/index'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>首页</span></div>
+        <div class="footer-item" onclick="location.href='/rider/pendingOrders'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 1.99-1.61L23 6H6"/></svg><span>订单</span></div>
+        <div class="footer-item" onclick="location.href='/rider/income'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-6"/></svg><span>收入</span></div>
+        <div class="footer-item" onclick="location.href='/rider/notifications'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>消息</span></div>
+        <div class="footer-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>我的</span></div>
+    </footer>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var nightModeToggle = document.getElementById('nightModeToggle');
+            var fontDecrease = document.getElementById('fontDecrease');
+            var fontIncrease = document.getElementById('fontIncrease');
+            var fontSizeDisplay = document.getElementById('fontSizeDisplay');
+
+            nightModeToggle.addEventListener('click', function() {
+                var isActive = nightModeToggle.classList.toggle('active');
+                localStorage.setItem('nightMode', isActive ? 'true' : 'false');
+                if (isActive) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            });
+
+            fontDecrease.addEventListener('click', function() {
+                adjustFontSize(-1);
+            });
+
+            fontIncrease.addEventListener('click', function() {
+                adjustFontSize(1);
+            });
+
+            function adjustFontSize(delta) {
+                var currentSize = parseInt(fontSizeDisplay.textContent);
+                var newSize = Math.max(12, Math.min(24, currentSize + delta));
+                fontSizeDisplay.textContent = newSize + 'px';
+                localStorage.setItem('fontSize', newSize);
+                document.documentElement.style.fontSize = newSize + 'px';
+            }
+
+            var nightMode = localStorage.getItem('nightMode');
+            if (nightMode === 'true') {
+                nightModeToggle.classList.add('active');
+                document.body.classList.add('dark-mode');
+            }
+
+            var fontSize = localStorage.getItem('fontSize');
+            if (fontSize) {
+                fontSizeDisplay.textContent = fontSize + 'px';
+                document.documentElement.style.fontSize = fontSize + 'px';
+            }
+        });
+    </script>
+</body>
+</html>

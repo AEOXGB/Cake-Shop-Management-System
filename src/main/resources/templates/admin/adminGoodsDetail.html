@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            .back-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                color: #C9A96E;
+                font-size: 14px;
+                text-decoration: none;
+                transition: all 0.3s;
+                margin-top: 4px;
+            }
+            .back-link:hover {
+                color: #A68B5C;
+                transform: translateX(-4px);
+            }
+            .detail-card {
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(20px);
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                box-shadow: 0 4px 30px rgba(45, 24, 16, 0.08);
+                padding: 30px;
+            }
+            .detail-layout {
+                display: flex;
+                gap: 30px;
+            }
+            .detail-image-wrap {
+                width: 280px;
+                height: 280px;
+                border-radius: 12px;
+                overflow: hidden;
+                border: 1px solid rgba(0, 0, 0, 0.06);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+                flex-shrink: 0;
+            }
+            .detail-image-wrap img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+            }
+            .detail-image-wrap img:hover {
+                transform: scale(1.05);
+            }
+            .detail-info {
+                flex: 1;
+            }
+            .detail-name {
+                font-size: 22px;
+                font-weight: 600;
+                color: #2d1810;
+                margin-bottom: 20px;
+            }
+            .detail-grid {
+                display: grid;
+                grid-template-columns: 100px 1fr;
+                gap: 16px 20px;
+            }
+            .detail-label {
+                color: #8a6d5b;
+                font-size: 14px;
+                padding: 4px 0;
+            }
+            .detail-value {
+                color: #2d1810;
+                font-size: 14px;
+                padding: 4px 0;
+            }
+            .detail-price {
+                color: #c0392b;
+                font-size: 20px;
+                font-weight: 700;
+            }
+            .detail-stock {
+                color: #27ae60;
+                font-weight: 600;
+            }
+            .section-divider {
+                margin-top: 30px;
+                padding-top: 30px;
+                border-top: 1px solid rgba(0, 0, 0, 0.06);
+            }
+            .section-title {
+                font-size: 16px;
+                font-weight: 600;
+                color: #2d1810;
+                margin-bottom: 16px;
+                position: relative;
+                padding-left: 12px;
+            }
+            .section-title::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 3px;
+                height: 16px;
+                background: linear-gradient(180deg, #C9A96E, #A68B5C);
+                border-radius: 2px;
+            }
+            .gallery {
+                display: flex;
+                gap: 15px;
+            }
+            .gallery-item {
+                width: 150px;
+                height: 150px;
+                border-radius: 10px;
+                overflow: hidden;
+                border: 1px solid rgba(0, 0, 0, 0.06);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+                transition: all 0.3s ease;
+            }
+            .gallery-item:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 25px rgba(45, 24, 16, 0.12);
+            }
+            .gallery-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .intro-text {
+                color: #666;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+            .action-bar {
+                margin-top: 30px;
+                padding-top: 30px;
+                border-top: 1px solid rgba(0, 0, 0, 0.06);
+                display: flex;
+                gap: 15px;
+            }
+            .action-bar .btn-edit {
+                padding: 12px 28px;
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                border-radius: 10px;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 4px 15px rgba(201, 169, 110, 0.3);
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .action-bar .btn-edit:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(201, 169, 110, 0.4);
+            }
+            .action-bar .btn-back {
+                padding: 12px 28px;
+                background: rgba(255, 255, 255, 0.6);
+                color: #8a6d5b;
+                border-radius: 10px;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.3s;
+                border: 1px solid rgba(0, 0, 0, 0.06);
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .action-bar .btn-back:hover {
+                background: rgba(255, 255, 255, 0.9);
+                border-color: rgba(201, 169, 110, 0.3);
+                color: #5a3a28;
+            }
+            .empty-state {
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(20px);
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                padding: 60px 40px;
+                text-align: center;
+            }
+            .empty-state p {
+                color: #b8a99a;
+                font-size: 15px;
+            }
+            .empty-state a {
+                display: inline-block;
+                margin-top: 18px;
+                padding: 10px 24px;
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                border-radius: 8px;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.3s;
+                box-shadow: 0 4px 15px rgba(201, 169, 110, 0.3);
+            }
+            .empty-state a:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(201, 169, 110, 0.4);
+            }
+        </style>
+
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">商品详情</h2>
+                <a th:href="@{/admin/goodsList}" class="back-link">← 返回商品列表</a>
+            </div>
+        </div>
+        
+        <div th:if="${goods != null}" class="detail-card">
+            <div class="detail-layout">
+                <div class="detail-image-wrap">
+                    <img th:src="${goods.cover}" alt="商品主图" onerror="this.src='/picture/default.jpg'">
+                </div>
+                
+                <div class="detail-info">
+                    <h3 class="detail-name">[[${goods.name}]]</h3>
+                    
+                    <div class="detail-grid">
+                        <div class="detail-label">商品ID</div>
+                        <div class="detail-value">[[${goods.id}]]</div>
+                        
+                        <div class="detail-label">商品分类</div>
+                        <div class="detail-value">
+                            <span th:each="type : ${typeList}" th:if="${type.id == goods.typeId}">[[${type.name}]]</span>
+                        </div>
+                        
+                        <div class="detail-label">商品价格</div>
+                        <div class="detail-value detail-price">¥[[${goods.price}]]</div>
+                        
+                        <div class="detail-label">库存数量</div>
+                        <div class="detail-value detail-stock">[[${goods.stock}]] 件</div>
+                        
+                        <div class="detail-label">上架时间</div>
+                        <div class="detail-value" style="color:#888;">[[${goods.daytime}]]</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-divider">
+                <h4 class="section-title">商品图片</h4>
+                <div class="gallery">
+                    <div class="gallery-item">
+                        <img th:src="${goods.cover}" alt="商品主图" onerror="this.src='/picture/default.jpg'">
+                    </div>
+                    <div class="gallery-item">
+                        <img th:src="${goods.image1}" alt="商品图片1" onerror="this.src='/picture/default.jpg'">
+                    </div>
+                    <div class="gallery-item">
+                        <img th:src="${goods.image2}" alt="商品图片2" onerror="this.src='/picture/default.jpg'">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-divider">
+                <h4 class="section-title">商品简介</h4>
+                <p class="intro-text">[[${goods.intro != null ? goods.intro : '暂无简介'}]]</p>
+            </div>
+            
+            <div class="action-bar">
+                <a th:href="@{/admin/editGoods(id=${goods.id})}" class="btn-edit">编辑商品</a>
+                <a th:href="@{/admin/goodsList}" class="btn-back">返回列表</a>
+            </div>
+        </div>
+        
+        <div th:if="${goods == null}" class="empty-state">
+            <p>商品不存在或已被删除</p>
+            <a th:href="@{/admin/goodsList}">返回列表</a>
+        </div>
+    </div>
+</body>
+</html>

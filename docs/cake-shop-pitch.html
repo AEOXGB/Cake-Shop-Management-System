@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CakeShop 蛋糕店管理系统 - 项目路演</title>
+    <link rel="icon" href="../picture/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* 基础变量 - Pitch Deck风格 */
+        :root {
+            --bg-1: #0a0a0f;
+            --bg-2: #12121a;
+            --bg-3: #1a1a25;
+            --text-1: #ffffff;
+            --text-2: #e0e0e0;
+            --text-3: #a0a0a0;
+            --accent-1: #6366f1;
+            --accent-2: #8b5cf6;
+            --accent-3: #ec4899;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            --card-bg: rgba(255,255,255,0.05);
+            --border: rgba(255,255,255,0.1);
+            --radius: 12px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'Inter', sans-serif;
+            background: var(--bg-1);
+            color: var(--text-1);
+            overflow: hidden;
+        }
+
+        /* Deck容器 */
+        .deck {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Slide样式 */
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 80px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            background: var(--bg-1);
+        }
+
+        .slide.is-active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent-gradient);
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        /* 页码 */
+        .slide-number {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            font-size: 14px;
+            color: var(--text-3);
+            z-index: 1000;
+        }
+
+        /* 封面样式 */
+        .cover-slide {
+            background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+        }
+
+        .cover-slide .logo-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+            box-shadow: 0 0 60px rgba(99,102,241,0.4);
+        }
+
+        .cover-slide .logo-container img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .cover-slide h1 {
+            font-size: 72px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cover-slide .subtitle {
+            font-size: 28px;
+            color: var(--text-2);
+            margin-bottom: 60px;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .cover-slide .meta {
+            font-size: 16px;
+            color: var(--text-3);
+        }
+
+        /* 标题样式 */
+        .slide h2 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .slide h3 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--text-1);
+        }
+
+        /* 内容区域 */
+        .content-box {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* 卡片网格 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .card h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-1);
+        }
+
+        .card p {
+            font-size: 14px;
+            color: var(--text-3);
+            line-height: 1.6;
+        }
+
+        /* 图片展示 */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .image-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .image-card img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .image-card .caption {
+            font-size: 14px;
+            color: var(--text-2);
+        }
+
+        /* 功能列表 */
+        .feature-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .feature-tag {
+            background: var(--accent-gradient);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: white;
+        }
+
+        /* 技术栈展示 */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .tech-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .tech-item .tech-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-1);
+            margin-bottom: 10px;
+        }
+
+        .tech-item .tech-desc {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        /* 问题解决展示 */
+        .problem-solution {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .problem-box {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: var(--radius);
+            padding: 25px;
+        }
+
+        .problem-box h4 {
+            color: #ef4444;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .solution-box {
+            background: rgba(34,197,94,0.1);
+            border: 1px solid rgba(34,197,94,0.3);
+            border-radius: var(--radius);
+            padding: 25px;
+        }
+
+        .solution-box h4 {
+            color: #22c55e;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        /* 时间线 */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+        }
+
+        .timeline-item {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .timeline-dot {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .timeline-item h4 {
+            font-size: 16px;
+            color: var(--text-1);
+            margin-bottom: 10px;
+        }
+
+        .timeline-item p {
+            font-size: 12px;
+            color: var(--text-3);
+            max-width: 150px;
+        }
+
+        /* 数据统计 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 900;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-3);
+        }
+
+        /* 结尾页面 */
+        .end-slide {
+            background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
+        }
+
+        .end-slide h2 {
+            font-size: 56px;
+            margin-bottom: 30px;
+        }
+
+        .end-slide .contact-info {
+            margin-top: 40px;
+        }
+
+        .end-slide .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: var(--text-2);
+        }
+
+        .end-slide .contact-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-gradient);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 动画 */
+        .anim-fade-up {
+            animation: fadeUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .anim-stagger-list > * {
+            opacity: 0;
+            animation: fadeUp 0.5s ease forwards;
+        }
+
+        .anim-stagger-list > *:nth-child(1) { animation-delay: 0.1s; }
+        .anim-stagger-list > *:nth-child(2) { animation-delay: 0.2s; }
+        .anim-stagger-list > *:nth-child(3) { animation-delay: 0.3s; }
+        .anim-stagger-list > *:nth-child(4) { animation-delay: 0.4s; }
+        .anim-stagger-list > *:nth-child(5) { animation-delay: 0.5s; }
+        .anim-stagger-list > *:nth-child(6) { animation-delay: 0.6s; }
+
+        /* 演讲者笔记 */
+        .notes {
+            display: none;
+        }
+
+        /* 导航提示 */
+        .nav-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 30px;
+            font-size: 12px;
+            color: var(--text-3);
+            z-index: 1000;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 20px;
+            }
+            .slide h2 {
+                font-size: 32px;
+            }
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="deck">
+        <!-- 进度条 -->
+        <div class="progress-bar" id="progressBar"></div>
+        
+        <!-- 页码 -->
+        <div class="slide-number" id="slideNumber">1 / 10</div>
+        
+        <!-- 导航提示 -->
+        <div class="nav-hint">← → 切换页面 | F 全屏</div>
+
+        <!-- Slide 1: 封面 -->
+        <section class="slide cover-slide is-active" data-slide="1">
+            <div class="logo-container anim-fade-up">
+                <img src="../picture/logo.jpg" alt="CakeShop Logo">
+            </div>
+            <h1 class="anim-fade-up">CakeShop</h1>
+            <p class="subtitle anim-fade-up">蛋糕店全链路管理系统</p>
+            <p class="subtitle anim-fade-up" style="font-size: 18px; margin-bottom: 20px;">用户端 · 管理员端 · 骑手端 三端协同</p>
+            <p class="meta anim-fade-up">项目路演 · 2026</p>
+            <div class="notes">
+                大家好！今天我要向大家介绍的是CakeShop蛋糕店管理系统。这是一个完整的电商+配送解决方案，包含用户端、管理员端和骑手端三大模块。接下来我将从项目简介、核心价值、功能亮点、技术实现等方面进行详细介绍。
+            </div>
+        </section>
+
+        <!-- Slide 2: 项目简介 -->
+        <section class="slide" data-slide="2">
+            <h2>项目简介</h2>
+            <div class="content-box">
+                <p style="font-size: 20px; color: var(--text-2); text-align: center; margin-bottom: 40px; line-height: 1.8;">
+                    CakeShop是一个面向蛋糕店的综合管理系统，提供完整的线上购物和配送解决方案。
+                    <br>系统采用Spring Boot + MyBatis Plus架构，支持三端协同运作。
+                </p>
+                <div class="card-grid anim-stagger-list">
+                    <div class="card">
+                        <div class="card-icon">👤</div>
+                        <h4>用户端</h4>
+                        <p>商品浏览、购物车管理、订单下单、订单查询、个人中心</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">⚙️</div>
+                        <h4>管理员端</h4>
+                        <p>商品管理、订单管理、用户管理、骑手审核、数据统计</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🚴</div>
+                        <h4>骑手端</h4>
+                        <p>订单接单、取货配送、收入明细、消息通知、个人设置</p>
+                    </div>
+                </div>
+            </div>
+            <div class="notes">
+                CakeShop项目的核心定位是为蛋糕店提供一站式管理解决方案。系统分为三个主要角色：用户端面向消费者，提供完整的购物体验；管理员端面向商家，实现商品、订单、用户等全方位管理；骑手端面向配送人员，实现高效的订单配送流程。
+            </div>
+        </section>
+
+        <!-- Slide 3: 核心价值 -->
+        <section class="slide" data-slide="3">
+            <h2>核心价值</h2>
+            <div class="content-box">
+                <div class="stats-grid anim-stagger-list">
+                    <div class="stat-card">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">端协同运作</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">30+</div>
+                        <div class="stat-label">功能模块</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">数据库表</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">测试覆盖</div>
+                    </div>
+                </div>
+                <div class="card-grid" style="margin-top: 50px;">
+                    <div class="card">
+                        <div class="card-icon">🔗</div>
+                        <h4>全链路闭环</h4>
+                        <p>从商品上架到订单配送，实现完整的业务闭环</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📊</div>
+                        <h4>数据可视化</h4>
+                        <p>ECharts图表展示销售趋势、订单分布等关键数据</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔔</div>
+                        <h4>实时通知</h4>
+                        <p>新订单、新商品自动通知骑手，提升响应效率</p>
+                    </div>
+                </div>
+            </div>
+            <div class="notes">
+                CakeShop的核心价值在于三端协同和全链路闭环。用户下单后，管理员可以设置佣金，骑手实时收到通知并接单配送，整个流程无缝衔接。系统包含30+功能模块，覆盖电商运营的方方面面。数据可视化功能帮助商家洞察经营状况，做出科学决策。
+            </div>
+        </section>
+
+        <!-- Slide 4: 用户端功能 -->
+        <section class="slide" data-slide="4">
+            <h2>用户端功能亮点</h2>
+            <div class="content-box">
+                <div class="image-grid">
+                    <div class="image-card">
+                        <img src="../screenshots/用户首页.png" alt="用户首页">
+                        <div class="caption">首页商品展示 · 热销新品推荐</div>
+                    </div>
+                    <div class="image-card">
+                        <img src="../screenshots/用户商品详情页.png" alt="商品详情">
+                        <div class="caption">商品详情 · 多图展示 · 规格选择</div>
+                    </div>
+                    <div class="image-card">
+                        <img src="../screenshots/用户购物车界面.png" alt="购物车">
+                        <div class="caption">购物车管理 · 数量调整 · 批量下单</div>
+                    </div>
+                    <div class="image-card">
+                        <img src="../screenshots/用户订单中心界面.png" alt="订单中心">
+                        <div class="caption">订单查询 · 状态追踪 · 取消订单</div>
+                    </div>
+                </div>
+                <div class="feature-list" style="justify-content: center;">
+                    <span class="feature-tag">商品浏览</span>
+                    <span class="feature-tag">热销推荐</span>
+                    <span class="feature-tag">新品上市</span>
+                    <span class="feature-tag">购物车</span>
+                    <span class="feature-tag">订单管理</span>
+                    <span class="feature-tag">个人中心</span>
+                </div>
+            </div>
+            <div class="notes">
+                用户端提供完整的购物体验。首页展示热销商品和新品推荐，吸引用户关注。商品详情页支持多图展示，让用户全面了解商品信息。购物车支持批量下单和数量调整。订单中心可以实时追踪订单状态，未取货的订单可以取消。
+            </div>
+        </section>
+
+        <!-- Slide 5: 管理员端功能 -->
+        <section class="slide" data-slide="5">
+            <h2>管理员端功能亮点</h2>
+            <div class="content-box">
+                <div class="image-grid" style="grid-template-columns: 1fr;">
+                    <div class="image-card" style="max-width: 800px; margin: 0 auto;">
+                        <img src="../screenshots/管理员界面.png" alt="管理员界面" style="max-height: 400px;">
+                        <div class="caption">管理员数据统计 · 商品订单管理 · 骑手审核</div>
+                    </div>
+                </div>
+                <div class="card-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: 30px;">
+                    <div class="card">
+                        <div class="card-icon" style="width: 40px; height: 40px; font-size: 20px;">📦</div>
+                        <h4 style="font-size: 16px;">商品管理</h4>
+                        <p style="font-size: 12px;">增删改查</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="width: 40px; height: 40px; font-size: 20px;">📋</div>
+                        <h4 style="font-size: 16px;">订单管理</h4>
+                        <p style="font-size: 12px;">佣金设置</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="width: 40px; height: 40px; font-size: 20px;">👥</div>
+                        <h4 style="font-size: 16px;">用户管理</h4>
+                        <p style="font-size: 12px;">信息维护</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="width: 40px; height: 40px; font-size: 20px;">🚴</div>
+                        <h4 style="font-size: 16px;">骑手审核</h4>
+                        <p style="font-size: 12px;">资质认证</p>
+                    </div>
+                </div>
+            </div>
+            <div class="notes">
+                管理员端是系统的核心管理平台。数据统计页面使用ECharts展示销售趋势、订单分布等关键指标。商品管理支持完整的增删改查操作。订单管理可以设置配送佣金，激励骑手接单。骑手审核功能确保配送人员资质合规。
+            </div>
+        </section>
+
+        <!-- Slide 6: 骑手端功能 -->
+        <section class="slide" data-slide="6">
+            <h2>骑手端功能亮点</h2>
+            <div class="content-box">
+                <div class="image-grid" style="grid-template-columns: 1fr;">
+                    <div class="image-card" style="max-width: 800px; margin: 0 auto;">
+                        <img src="../screenshots/骑手界面.png" alt="骑手界面" style="max-height: 400px;">
+                        <div class="caption">骑手首页 · 数据可视化 · 订单管理 · 收入统计</div>
+                    </div>
+                </div>
+                <div class="card-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: 30px;">
+                    <div class="card">
+                        <div class="card-icon" style="width: 40px; height: 40px; font-size: 20px;">📥</div>
+                        <h4 style="font-size: 16px;">待接单</h4>
+                        <p style="font-size: 12px;">实时通知</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="width: 40px; height: 40px; font-size: 20px;">📦</div>
+                        <h4 style="font-size: 16px;">待取货</h4>
+                        <p style="font-size: 12px;">确认取货</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="width: 40px; height: 40px; font-size: 20px;">🚚</div>
+                        <h4 style="font-size: 16px;">配送中</h4>
+                        <p style="font-size: 12px;">完成配送</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon" style="width: 40px; height: 40px; font-size: 20px;">💰</div>
+                        <h4 style="font-size: 16px;">收入明细</h4>
+                        <p style="font-size: 12px;">佣金统计</p>
+                    </div>
+                </div>
+            </div>
+            <div class="notes">
+                骑手端是配送人员的专属工作平台。首页使用ECharts展示订单状态分布、配送趋势等数据。订单管理支持完整的配送流程：接单、取货、配送、完成。收入明细清晰展示每笔订单的佣金，帮助骑手了解收入情况。
+            </div>
+        </section>
+
+        <!-- Slide 7: 技术实现 -->
+        <section class="slide" data-slide="7">
+            <h2>技术实现</h2>
+            <div class="content-box">
+                <h3 style="text-align: center; margin-bottom: 30px;">后端技术栈</h3>
+                <div class="tech-grid anim-stagger-list">
+                    <div class="tech-item">
+                        <div class="tech-name">Java 8+</div>
+                        <div class="tech-desc">开发语言</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">Spring Boot</div>
+                        <div class="tech-desc">后端框架</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">MyBatis Plus</div>
+                        <div class="tech-desc">ORM框架</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">MySQL 8</div>
+                        <div class="tech-desc">数据库</div>
+                    </div>
+                </div>
+                <h3 style="text-align: center; margin: 40px 0 30px;">前端技术栈</h3>
+                <div class="tech-grid anim-stagger-list">
+                    <div class="tech-item">
+                        <div class="tech-name">Thymeleaf</div>
+                        <div class="tech-desc">模板引擎</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">ZUI</div>
+                        <div class="tech-desc">组件库</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">ECharts</div>
+                        <div class="tech-desc">数据可视化</div>
+                    </div>
+                    <div class="tech-item">
+                        <div class="tech-name">jQuery</div>
+                        <div class="tech-desc">DOM操作</div>
+                    </div>
+                </div>
+            </div>
+            <div class="notes">
+                技术架构采用经典的Spring Boot + MyBatis Plus组合，保证系统的稳定性和可维护性。前端使用Thymeleaf模板引擎实现页面渲染，ZUI组件库提供美观的UI组件。ECharts实现数据可视化，帮助用户直观了解业务数据。
+            </div>
+        </section>
+
+        <!-- Slide 8: 问题与解决 -->
+        <section class="slide" data-slide="8">
+            <h2>问题与解决思路</h2>
+            <div class="content-box">
+                <div class="problem-solution anim-stagger-list">
+                    <div class="problem-box">
+                        <h4>❌ 问题：骑手登录被拦截</h4>
+                        <p style="color: var(--text-3); font-size: 14px;">骑手登录请求被拦截器拦截，无法正常跳转到骑手首页</p>
+                    </div>
+                    <div class="solution-box">
+                        <h4>✅ 解决：扩展拦截器逻辑</h4>
+                        <p style="color: var(--text-3); font-size: 14px;">修改拦截器同时检查user和rider session，放行骑手相关路径</p>
+                    </div>
+                    <div class="problem-box">
+                        <h4>❌ 问题：订单状态不一致</h4>
+                        <p style="color: var(--text-3); font-size: 14px;">用户下单后骑手端看不到新订单，状态流转混乱</p>
+                    </div>
+                    <div class="solution-box">
+                        <h4>✅ 解决：统一状态管理</h4>
+                        <p style="color: var(--text-3); font-size: 14px;">定义完整状态流转：待付款→已付款→待配送→待取货→配送中→已完成</p>
+                    </div>
+                    <div class="problem-box">
+                        <h4>❌ 问题：UTF-8 BOM编译错误</h4>
+                        <p style="color: var(--text-3); font-size: 14px;">Java文件包含BOM字符导致编译失败</p>
+                    </div>
+                    <div class="solution-box">
+                        <h4>✅ 解决：使用无BOM编码</h4>
+                        <p style="color: var(--text-3); font-size: 14px;">删除包含BOM的文件，使用纯UTF-8编码重新创建</p>
+                    </div>
+                </div>
+            </div>
+            <div class="notes">
+                开发过程中遇到了一些典型问题。骑手登录被拦截是因为拦截器只检查用户session，我们扩展了拦截器逻辑同时支持骑手。订单状态不一致是因为状态定义不清晰，我们重新设计了完整的状态流转机制。UTF-8 BOM问题是编码导致的，通过使用无BOM编码解决。
+            </div>
+        </section>
+
+        <!-- Slide 9: 未来规划 -->
+        <section class="slide" data-slide="9">
+            <h2>未来规划</h2>
+            <div class="content-box">
+                <div class="timeline anim-stagger-list">
+                    <div class="timeline-item">
+                        <div class="timeline-dot">1</div>
+                        <h4>内部测试</h4>
+                        <p>功能测试<br>Bug修复</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">2</div>
+                        <h4>小规模推广</h4>
+                        <p>本地试点<br>收集反馈</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">3</div>
+                        <h4>全面推广</h4>
+                        <p>移动端适配<br>支付扩展</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">4</div>
+                        <h4>生态扩展</h4>
+                        <p>多店铺支持<br>App开发</p>
+                    </div>
+                </div>
+                <div class="card-grid" style="margin-top: 50px;">
+                    <div class="card">
+                        <div class="card-icon">📱</div>
+                        <h4>移动端适配</h4>
+                        <p>开发移动端H5页面，支持手机浏览器访问</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💳</div>
+                        <h4>支付扩展</h4>
+                        <p>集成微信支付、支付宝，提升支付体验</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🎁</div>
+                        <h4>营销功能</h4>
+                        <p>优惠券、满减活动、会员积分系统</p>
+                    </div>
+                </div>
+            </div>
+            <div class="notes">
+                项目规划分为四个阶段。第一阶段完成内部测试和Bug修复。第二阶段面向本地蛋糕店试点，收集商家反馈。第三阶段进行全面推广，开发移动端适配和扩展支付方式。第四阶段进行生态扩展，支持多店铺和开发移动App。
+            </div>
+        </section>
+
+        <!-- Slide 10: 结尾 -->
+        <section class="slide end-slide" data-slide="10">
+            <h2>感谢聆听</h2>
+            <p style="font-size: 24px; color: var(--text-2); margin-bottom: 40px;">
+                CakeShop · 让蛋糕店管理更简单
+            </p>
+            <div class="contact-info anim-stagger-list">
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <span>support@cakeshop.com</span>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">🔗</div>
+                    <span>github.com/xxx/CakeShop</span>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📍</div>
+                    <span>中国 · 北京</span>
+                </div>
+            </div>
+            <p style="font-size: 16px; color: var(--text-3); margin-top: 60px;">
+                Made with ❤️ for Cake Shop Management
+            </p>
+            <div class="notes">
+                感谢大家的聆听！CakeShop致力于让蛋糕店管理更简单。如果您对我们的项目感兴趣，欢迎通过邮箱或GitHub联系我们。期待与您合作，共同打造更好的蛋糕店管理解决方案！
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Slide导航逻辑
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        const slideNumber = document.getElementById('slideNumber');
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            
+            slides[currentSlide].classList.remove('is-active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('is-active');
+            
+            // 更新进度条
+            progressBar.style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+            
+            // 更新页码
+            slideNumber.textContent = (currentSlide + 1) + ' / ' + totalSlides;
+            
+            // 更新URL hash
+            window.location.hash = currentSlide + 1;
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowRight':
+                case 'Space':
+                case 'PageDown':
+                    goToSlide(currentSlide + 1);
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    goToSlide(currentSlide - 1);
+                    break;
+                case 'Home':
+                    goToSlide(0);
+                    break;
+                case 'End':
+                    goToSlide(totalSlides - 1);
+                    break;
+                case 'f':
+                case 'F':
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen();
+                    } else {
+                        document.exitFullscreen();
+                    }
+                    break;
+            }
+        });
+
+        // 初始化
+        function init() {
+            // 检查URL hash
+            const hash = parseInt(window.location.hash.slice(1));
+            if (hash > 0 && hash <= totalSlides) {
+                goToSlide(hash - 1);
+            } else {
+                goToSlide(0);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

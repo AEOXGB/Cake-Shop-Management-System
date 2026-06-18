@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            .warning-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            
+            .warning-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .warning-title h2 {
+                margin: 0;
+                color: #2d1810;
+            }
+            
+            .warning-icon {
+                font-size: 28px;
+            }
+            
+            .threshold-section {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .threshold-section input {
+                width: 80px;
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+            
+            .btn-set {
+                padding: 8px 16px;
+                background: linear-gradient(135deg, #d4a574 0%, #c4956a 100%);
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+            
+            .btn-set:hover {
+                opacity: 0.9;
+            }
+            
+            .btn-search {
+                padding: 8px 16px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+            
+            .btn-search:hover {
+                opacity: 0.9;
+            }
+            
+            .current-threshold {
+                font-size: 14px;
+                color: #8a6d5b;
+                margin-bottom: 10px;
+            }
+            
+            .current-threshold strong {
+                color: #c4956a;
+            }
+            
+            .warning-table {
+                width: 100%;
+                border-collapse: collapse;
+                background: white;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            }
+            
+            .warning-table th,
+            .warning-table td {
+                padding: 12px 15px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .warning-table th {
+                background: #f8f4f0;
+                color: #8a6d5b;
+                font-weight: 600;
+            }
+            
+            .warning-table tbody tr:hover {
+                background: #faf8f5;
+            }
+            
+            .status-warning {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                padding: 4px 10px;
+                background: rgba(231, 76, 60, 0.1);
+                color: #e74c3c;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            
+            .stock-low {
+                color: #e74c3c;
+                font-weight: 600;
+            }
+            
+            .btn-view, .btn-edit {
+                padding: 6px 12px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 12px;
+                text-decoration: none;
+                display: inline-block;
+                margin-right: 5px;
+            }
+            
+            .btn-view {
+                background: #3498db;
+                color: white;
+            }
+            
+            .btn-view:hover {
+                background: #2980b9;
+            }
+            
+            .btn-edit {
+                background: #f39c12;
+                color: white;
+            }
+            
+            .btn-edit:hover {
+                background: #d68910;
+            }
+            
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                color: #999;
+            }
+            
+            .empty-icon {
+                font-size: 48px;
+                margin-bottom: 16px;
+            }
+            
+            .empty-text {
+                font-size: 14px;
+            }
+            
+            /* 夜间模式样式 */
+            body.night-mode .warning-title h2 {
+                color: #e0d5c8;
+            }
+            
+            body.night-mode .current-threshold {
+                color: #a09080;
+            }
+            
+            body.night-mode .current-threshold strong {
+                color: #d4a574;
+            }
+            
+            body.night-mode .warning-table {
+                background: rgba(40, 40, 55, 0.8);
+            }
+            
+            body.night-mode .warning-table th {
+                background: rgba(60, 60, 80, 0.8);
+                color: #a09080;
+            }
+            
+            body.night-mode .warning-table td {
+                border-bottom-color: rgba(255, 255, 255, 0.06);
+            }
+            
+            body.night-mode .warning-table tbody tr:hover {
+                background: rgba(201, 169, 110, 0.08);
+            }
+            
+            body.night-mode .status-warning {
+                background: rgba(231, 76, 60, 0.15);
+                color: #e74c3c;
+            }
+            
+            body.night-mode .stock-low {
+                color: #e74c3c;
+            }
+        </style>
+
+        <!-- 页面标题和阈值设置 -->
+        <div class="warning-header">
+            <div class="warning-title">
+                <span class="warning-icon">⚠️</span>
+                <h2>库存预警</h2>
+            </div>
+            <div class="threshold-section">
+                <input type="number" id="thresholdInput" th:value="${warningThreshold}" placeholder="预警阈值" min="1">
+                <button class="btn-set" onclick="setThreshold()">设置阈值</button>
+                <button class="btn-search" onclick="searchWarning()">查询</button>
+            </div>
+        </div>
+        
+        <!-- 当前阈值提示 -->
+        <div class="current-threshold">
+            当前预警阈值：<strong th:text="${warningThreshold}">40</strong> 件
+            <span th:if="${warningCount > 0}" style="margin-left: 15px; color: #e74c3c;">
+                共 <strong th:text="${warningCount}">0</strong> 条预警商品
+            </span>
+        </div>
+
+        <!-- 预警商品列表 -->
+        <div style="overflow-x: auto;">
+            <table class="warning-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>商品名称</th>
+                        <th>分类</th>
+                        <th>当前库存</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="goods : ${warningGoodsList}">
+                        <td th:text="${goods.id}" style="color: #8a6d5b;">1</td>
+                        <td th:text="${goods.name} != null ? ${goods.name} : '未命名'">商品名称</td>
+                        <td th:text="${goods.categoryName} != null ? ${goods.categoryName} : '未分类'">分类</td>
+                        <td class="stock-low" th:text="${goods.stock}">10</td>
+                        <td>
+                            <span class="status-warning">
+                                <span>⚠</span>
+                                <span>紧急 警告</span>
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/goodsDetail(id=${goods.id})}" class="btn-view">查看详情</a>
+                            <a th:href="@{/admin/editGoods(id=${goods.id})}" class="btn-edit">编辑</a>
+                        </td>
+                    </tr>
+                    
+                    <!-- 空状态 -->
+                    <tr th:if="${#lists.isEmpty(warningGoodsList)}">
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <div class="empty-icon">✅</div>
+                                <div class="empty-text">暂无库存预警商品</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <script type="text/javascript">
+            function setThreshold() {
+                var threshold = document.getElementById('thresholdInput').value;
+                if (threshold && parseInt(threshold) > 0) {
+                    window.location.href = '/admin/stockWarning?action=setThreshold&threshold=' + threshold;
+                } else {
+                    alert('请输入有效的阈值（大于0的整数）');
+                }
+            }
+            
+            function searchWarning() {
+                var threshold = document.getElementById('thresholdInput').value;
+                if (threshold && parseInt(threshold) > 0) {
+                    window.location.href = '/admin/stockWarning?threshold=' + threshold;
+                } else {
+                    window.location.href = '/admin/stockWarning';
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>

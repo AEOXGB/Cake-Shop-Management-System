@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            /* 操作日志页面样式 */
+            .log-page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 15px;
+                margin-bottom: 24px;
+            }
+            
+            .log-search-box {
+                display: flex;
+                gap: 10px;
+            }
+            
+            .log-search-box input {
+                padding: 10px 16px;
+                border: 1px solid rgba(0, 0, 0, 0.08);
+                border-radius: 10px;
+                font-size: 14px;
+                background: rgba(255, 255, 255, 0.8);
+                width: 280px;
+                transition: all 0.3s;
+                font-family: inherit;
+            }
+            
+            .log-search-box input:focus {
+                outline: none;
+                border-color: #C9A96E;
+                box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.1);
+            }
+            
+            .log-search-box .btn-search {
+                padding: 10px 22px;
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s;
+                font-family: inherit;
+                box-shadow: 0 4px 15px rgba(201, 169, 110, 0.3);
+            }
+            
+            .log-search-box .btn-search:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(201, 169, 110, 0.4);
+            }
+            
+            .log-search-box .btn-reset {
+                padding: 10px 18px;
+                background: rgba(0, 0, 0, 0.05);
+                color: #8a6d5b;
+                border: 1px solid rgba(0, 0, 0, 0.08);
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                text-decoration: none;
+                transition: all 0.3s;
+                font-family: inherit;
+            }
+            
+            .log-search-box .btn-reset:hover {
+                background: rgba(0, 0, 0, 0.08);
+            }
+            
+            /* 日志表格 */
+            .log-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+            
+            .log-table th {
+                padding: 14px 16px;
+                text-align: left;
+                font-weight: 600;
+                color: #5a3a28;
+                font-size: 13px;
+                background: linear-gradient(135deg, #faf6f2 0%, #f5eee8 100%);
+                letter-spacing: 0.5px;
+                white-space: nowrap;
+            }
+            
+            .log-table th:first-child {
+                border-radius: 10px 0 0 0;
+            }
+            
+            .log-table th:last-child {
+                border-radius: 0 10px 0 0;
+            }
+            
+            .log-table td {
+                padding: 12px 16px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+                font-size: 13px;
+                color: #5a3a28;
+                vertical-align: middle;
+            }
+            
+            .log-table tr:hover td {
+                background: rgba(201, 169, 110, 0.06);
+            }
+            
+            .log-table tr:last-child td:first-child {
+                border-radius: 0 0 0 10px;
+            }
+            
+            .log-table tr:last-child td:last-child {
+                border-radius: 0 0 10px 0;
+            }
+            
+            /* 列宽控制 */
+            .log-table .col-id {
+                width: 60px;
+                text-align: center;
+            }
+            .log-table .col-username {
+                width: 120px;
+            }
+            .log-table .col-operation {
+                width: 150px;
+            }
+            .log-table .col-method {
+                width: 200px;
+            }
+            .log-table .col-params {
+                max-width: 250px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .log-table .col-ip {
+                width: 130px;
+            }
+            .log-table .col-time {
+                width: 170px;
+                white-space: nowrap;
+            }
+            
+            /* 操作标签 */
+            .operation-tag {
+                display: inline-block;
+                padding: 3px 12px;
+                border-radius: 14px;
+                font-size: 12px;
+                font-weight: 500;
+            }
+            .operation-tag-tag-goods {
+                background: rgba(52, 152, 219, 0.12);
+                color: #2980b9;
+            }
+            .operation-tag-user {
+                background: rgba(46, 204, 113, 0.12);
+                color: #27ae60;
+            }
+            .operation-tag-order {
+                background: rgba(155, 89, 182, 0.12);
+                color: #8e44ad;
+            }
+            .operation-tag-system {
+                background: rgba(231, 76, 60, 0.12);
+                color: #c0392b;
+            }
+            .operation-tag-default {
+                background: rgba(0, 0, 0, 0.05);
+                color: #7f8c8d;
+            }
+
+            /* 空状态 */
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                color: #8a6d5b;
+            }
+            .empty-state .empty-icon {
+                font-size: 48px;
+                margin-bottom: 16px;
+                opacity: 0.5;
+            }
+            .empty-state .empty-text {
+                font-size: 16px;
+            }
+            
+            /* 夜间模式兼容 */
+            body.night-mode .log-table th {
+                background: linear-gradient(135deg, #2a2520 0%, #353028 100%);
+                color: #c0b5a8;
+            }
+            body.night-mode .log-table td {
+                color: #c0b5a8;
+                border-bottom-color: rgba(255, 255, 255, 0.06);
+            }
+            body.night-mode .log-table tr:hover td {
+                background: rgba(201, 169, 110, 0.08);
+            }
+            body.night-mode .log-search-box input {
+                background: rgba(40, 40, 55, 0.8);
+                border-color: rgba(255, 255, 255, 0.1);
+                color: #e0d5c8;
+            }
+            body.night-mode .log-search-box input:focus {
+                background: rgba(50, 50, 65, 0.9);
+            }
+        </style>
+
+        <!-- 页面标题和搜索 -->
+        <div class="log-page-header">
+            <div>
+                <h2 class="page-title">操作日志</h2>
+                <p style="color: #8a6d5b; font-size: 14px; margin-top: 4px;">共 <strong th:text="${totalItems}">0</strong> 条操作记录</p>
+            </div>
+            <div class="log-search-box">
+                <form action="/admin/operationLogs" method="get" style="display: flex; gap: 10px;">
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="搜索用户名、操作、IP地址、ID..." id="searchInput">
+                    <button type="submit" class="btn-search">搜索</button>
+                    <a th:href="@{/admin/operationLogs}" class="btn-reset" th:if="${keyword != null and !keyword.isEmpty()}">清除</a>
+                </form>
+                <!-- 分页数据 -->
+                <input type="hidden" id="currentPage" th:value="${currentPage}">
+                <input type="hidden" id="totalPages" th:value="${totalPages}">
+                <input type="hidden" id="keyword" th:value="${keyword}">
+            </div>
+        </div>
+
+        <!-- 日志列表 -->
+        <div style="overflow-x: auto;">
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th class="col-id">ID</th>
+                        <th class="col-username">用户名</th>
+                        <th class="col-operation">操作</th>
+                        <th class="col-method">方法</th>
+                        <th class="col-params">参数</th>
+                        <th class="col-ip">IP地址</th>
+                        <th class="col-time">操作时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="log : ${logList}">
+                        <td class="col-id" th:text="${log.id}" style="color: #8a6d5b;">1</td>
+                        <td class="col-username">
+                            <strong th:text="${log.username}">admin</strong>
+                        </td>
+                        <td class="col-operation">
+                            <span class="operation-tag" th:text="${log.operation}" th:attr="data-operation=${log.operation}">操作</span>
+                        </td>
+                        <td class="col-method" style="color: #8a6d5b; font-size: 12px; font-family: monospace;" th:text="${log.method}">AdminController.method</td>
+                        <td class="col-params" title="${log.params}" th:text="${log.params}" style="color: #8a6d5b; font-size: 12px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">参数</td>
+                        <td class="col-ip" style="color: #8a6d5b; font-size: 12px;" th:text="${log.ip}">127.0.0.1</td>
+                        <td class="col-time" style="color: #8a6d5b; font-size: 12px;" th:text="${#dates.format(log.createTime, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</td>
+                    </tr>
+                    <!-- 空状态 -->
+                    <tr th:if="${#lists.isEmpty(logList)}">
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <div class="empty-icon">📝</div>
+                                <div class="empty-text">
+                                    <span th:if="${keyword != null and !keyword.isEmpty()}">没有找到匹配的操作日志记录</span>
+                                    <span th:unless="${keyword != null and !keyword.isEmpty()}">暂无操作日志记录</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination-container" style="margin-top: 28px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <div id="paginationContent"></div>
+        </div>
+        
+        <script type="text/javascript">
+            $(function() {
+                // 根据操作描述自动添加标签样式
+                $('.operation-tag').each(function() {
+                    var operation = $(this).data('operation') || '';
+                    var cls = 'default';
+                    if (operation.indexOf('商品') !== -1) cls = 'goods';
+                    else if (operation.indexOf('用户') !== -1 || operation.indexOf('审核') !== -1 || operation.indexOf('冻结') !== -1 || operation.indexOf('解冻') !== -1) cls = 'user';
+                    else if (operation.indexOf('订单') !== -1 || operation.indexOf('发货') !== -1) cls = 'order';
+                    else if (operation.indexOf('密码') !== -1 || operation.indexOf('设置') !== -1) cls = 'system';
+                    $(this).addClass('operation-tag-' + cls);
+                });
+                
+                // 生成分页
+                var currentPage = parseInt(document.getElementById('currentPage').value) || 1;
+                var totalPages = parseInt(document.getElementById('totalPages').value) || 1;
+                var keyword = document.getElementById('keyword').value || '';
+                
+                if (totalPages > 1) {
+                    var paginationHtml = '';
+                    
+                    if (currentPage > 1) {
+                        paginationHtml += '<a href="/admin/operationLogs?page=' + (currentPage - 1) + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') + '" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: #fff; margin-right: 4px;">上一页</a>';
+                    }
+                    
+                    for (var i = 1; i <= totalPages; i++) {
+                        var activeClass = (i == currentPage) ? 'background: linear-gradient(135deg, #d4a574 0%, #c4956a 100%); color: white;' : 'border: 1px solid #ddd; color: #333; background: #fff;';
+                        paginationHtml += '<a href="/admin/operationLogs?page=' + i + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') + '" style="padding: 8px 12px; border-radius: 4px; text-decoration: none; display: inline-block; margin: 0 2px; ' + activeClass + ';">' + i + '</a>';
+                    }
+                    
+                    if (currentPage < totalPages) {
+                        paginationHtml += '<a href="/admin/operationLogs?page=' + (currentPage + 1) + (keyword ? '&keyword=' + encodeURIComponent(keyword) : '') + '" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: #fff; margin-left: 4px;">下一页</a>';
+                    }
+                    
+                    document.getElementById('paginationContent').innerHTML = paginationHtml;
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

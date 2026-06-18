@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单详情</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <style>
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .container { padding: 20px; }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+        .label { color: #999; }
+        .value { color: #333; font-weight: 500; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        
+        /* ===== 夜间模式样式 ===== */
+        body.dark-mode { background: #1a1a2e; }
+        body.dark-mode .detail-card { background: #16213e; }
+        body.dark-mode .detail-card .label { color: #b3b3b3; }
+        body.dark-mode .detail-card .value { color: #e0d5c8; }
+        body.dark-mode .goods-list { background: #16213e; }
+        body.dark-mode .goods-item { border-bottom-color: #2d3436; }
+        body.dark-mode .goods-item .name { color: #e0d5c8; }
+        body.dark-mode .commission-card { background: #16213e; }
+        body.dark-mode .commission-card .label { color: #b3b3b3; }
+        body.dark-mode .btn-secondary { background: #2d3436; color: #e0d5c8; }
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="javascript:history.back()" style="color: white;">← 返回</a>
+        <h1>订单详情</h1>
+        <span></span>
+    </header>
+
+    <div class="container" th:if="${order != null}">
+        <div class="card">
+            <div class="title">基本信息</div>
+            <div class="row"><span class="label">订单号</span><span class="value">#<span th:text="${order.id}"></span></span></div>
+            <div class="row"><span class="label">下单时间</span><span class="value" th:text="${order.datetime}"></span></div>
+            <div class="row"><span class="label">订单金额</span><span class="value" style="color: #e91e63;">¥<span th:text="${order.total}"></span></span></div>
+        </div>
+
+        <div class="card">
+            <div class="title">收货信息</div>
+            <div class="row"><span class="label">收货人</span><span class="value" th:text="${order.name}"></span></div>
+            <div class="row"><span class="label">联系电话</span><span class="value" th:text="${order.phone}"></span></div>
+            <div class="row"><span class="label">收货地址</span><span class="value" th:text="${order.address}"></span></div>
+        </div>
+
+        <div class="card">
+            <div class="title">商品信息</div>
+            <div class="row"><span class="label">商品数量</span><span class="value" th:text="${order.amount}"></span>件</div>
+            <div th:if="${order.goods != null && !order.goods.isEmpty()}">
+                <div th:each="item : ${order.goods}" class="row">
+                    <span class="label">商品</span>
+                    <span class="value" th:text="${item.name} + ' x ' + ${item.amount} + ' - ¥' + ${item.price}"></span>
+                </div>
+            </div>
+            <div th:else class="row">
+                <span class="label">商品名称</span>
+                <span class="value">暂无</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="title">佣金信息</div>
+            <div class="row"><span class="label">佣金金额</span><span class="value" style="color: #4caf50; font-weight: 600;">¥<span th:text="${order.commission != null ? order.commission : '0.00'}"></span></span></div>
+        </div>
+
+        <div style="text-align: center; padding: 20px;">
+            <button class="btn btn-secondary" onclick="history.back()">返回列表</button>
+            <button th:if="${order.status == 3}" class="btn btn-primary" th:onclick="|location.href='/rider/acceptOrder?id=${order.id}'|">接单</button>
+            <button th:if="${order.status == 6}" class="btn btn-primary" th:onclick="|location.href='/rider/confirmPickup?id=${order.id}'|">确认取货</button>
+            <button th:if="${order.status == 7}" class="btn btn-primary" th:onclick="|location.href='/rider/confirmDeliver?id=${order.id}'|">确认送达</button>
+        </div>
+    </div>
+
+    <div class="container" th:if="${order == null}">
+        <div style="text-align: center; padding: 40px; color: #999;">
+            <p>订单不存在</p>
+        </div>
+    </div>
+
+    <script>
+        // ===== 夜间模式和字体大小初始化 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // 夜间模式初始化
+            var nightMode = localStorage.getItem('nightMode');
+            if (nightMode === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // 字体大小初始化
+            var fontSize = localStorage.getItem('fontSize');
+            if (fontSize) {
+                document.documentElement.style.fontSize = fontSize + 'px';
+            }
+        });
+    </script>
+</body>
+</html>

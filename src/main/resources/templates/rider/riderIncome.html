@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收入明细 - 骑手端</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 18px; font-weight: 500; }
+        .user-info { display: flex; align-items: center; gap: 15px; }
+        .user-info span { font-size: 14px; }
+        .logout { color: white; text-decoration: none; font-size: 14px; padding: 5px 10px; background: rgba(255,255,255,0.2); border-radius: 4px; }
+        .content { padding: 20px; max-width: 800px; margin: 0 auto; }
+        .stats-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .stats-card h3 { font-size: 14px; color: #999; margin-bottom: 15px; }
+        .stats-row { display: flex; justify-content: space-around; text-align: center; }
+        .stat-item { flex: 1; }
+        .stat-item .number { font-size: 28px; font-weight: 600; color: #C9A96E; }
+        .stat-item .label { font-size: 12px; color: #999; margin-top: 5px; }
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 15px; }
+        .filter-btn { padding: 8px 16px; border: none; border-radius: 20px; background: white; color: #666; font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .filter-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .income-list { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .list-header { padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 500; color: #333; }
+        .list-item { padding: 15px 20px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; }
+        .list-item:last-child { border-bottom: none; }
+        .item-info { flex: 1; }
+        .item-title { font-weight: 500; color: #333; margin-bottom: 5px; }
+        .item-time { font-size: 12px; color: #999; }
+        .item-amount { font-size: 18px; font-weight: 600; color: #52c41a; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+        footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .footer-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #999; cursor: pointer; }
+        .footer-item.active { color: #667eea; }
+        .footer-item svg { width: 24px; height: 24px; }
+        .footer-item span { font-size: 12px; }
+        
+        /* ===== 夜间模式样式 ===== */
+        body.dark-mode { background: #1a1a2e; }
+        body.dark-mode .income-card { background: #16213e; }
+        body.dark-mode .income-card .label { color: #b3b3b3; }
+        body.dark-mode .filter-tabs { background: #16213e; }
+        body.dark-mode .filter-tabs .tab { color: #666; }
+        body.dark-mode .filter-tabs .tab.active { color: #667eea; }
+        body.dark-mode .income-list { background: #16213e; }
+        body.dark-mode .income-item { border-bottom-color: #2d3436; }
+        body.dark-mode .income-item .time { color: #666; }
+        body.dark-mode footer { background: #16213e; }
+        body.dark-mode .footer-item { color: #666; }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>💰 收入明细</h1>
+        <div class="user-info">
+            <span>欢迎, [[${rider.name}]]</span>
+            <a href="/rider/logout" class="logout">退出</a>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="stats-card">
+            <h3>收入统计</h3>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="number">¥[[${totalIncome}]]</div>
+                    <div class="label">累计收入</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">¥[[${monthIncome}]]</div>
+                    <div class="label">本月收入</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">¥[[${todayIncome}]]</div>
+                    <div class="label">今日收入</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterOrders('all')">全部</button>
+            <button class="filter-btn" onclick="filterOrders('today')">今日</button>
+            <button class="filter-btn" onclick="filterOrders('month')">本月</button>
+            <button class="filter-btn" onclick="filterOrders('lastMonth')">上月</button>
+        </div>
+
+        <div class="income-list">
+            <div class="list-header">收入记录</div>
+            <div th:if="${incomeList != null && !incomeList.isEmpty()}">
+                <div th:each="item : ${incomeList}" class="list-item">
+                    <div class="item-info">
+                        <div class="item-title">订单 #[[${item.orderId}]]</div>
+                        <div class="item-time">[[${item.time}]]</div>
+                    </div>
+                    <div class="item-amount">+¥[[${item.commission}]]</div>
+                </div>
+            </div>
+            <div th:else class="empty-state">
+                <div>📭</div>
+                <p>暂无收入记录</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-item" onclick="location.href='/rider/index'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>首页</span></div>
+        <div class="footer-item" onclick="location.href='/rider/pendingOrders'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 1.99-1.61L23 6H6"/></svg><span>订单</span></div>
+        <div class="footer-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-6"/></svg><span>收入</span></div>
+        <div class="footer-item" onclick="location.href='/rider/notifications'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>消息</span></div>
+        <div class="footer-item" onclick="location.href='/rider/profile'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>我的</span></div>
+    </footer>
+
+    <script>
+        function filterOrders(type) {
+            window.location.href = '/rider/income?type=' + type;
+        }
+
+        // ===== 夜间模式和字体大小初始化 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // 夜间模式初始化
+            var nightMode = localStorage.getItem('nightMode');
+            if (nightMode === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // 字体大小初始化
+            var fontSize = localStorage.getItem('fontSize');
+            if (fontSize) {
+                document.documentElement.style.fontSize = fontSize + 'px';
+            }
+        });
+    </script>
+</body>
+</html>

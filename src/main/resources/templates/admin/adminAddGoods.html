@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            .form-section {
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(20px);
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                box-shadow: 0 4px 30px rgba(45, 24, 16, 0.08);
+                padding: 35px;
+            }
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+            }
+            .form-grid .full-width {
+                grid-column: 1 / -1;
+            }
+            .form-label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #5a3a28;
+                font-size: 14px;
+            }
+            .form-label .required {
+                color: #c0392b;
+                margin-left: 2px;
+            }
+            .form-control {
+                width: 100%;
+                padding: 12px 16px;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                font-size: 14px;
+                transition: border-color 0.3s, box-shadow 0.3s;
+                background: rgba(255, 255, 255, 0.8);
+                font-family: inherit;
+            }
+            .form-control:focus {
+                outline: none;
+                border-color: #C9A96E;
+                box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.12);
+                background: #fff;
+            }
+            select.form-control {
+                appearance: auto;
+                cursor: pointer;
+            }
+            textarea.form-control {
+                resize: vertical;
+                min-height: 100px;
+            }
+            .file-upload {
+                width: 100%;
+                padding: 12px;
+                border: 1px dashed rgba(0, 0, 0, 0.15);
+                border-radius: 10px;
+                font-size: 14px;
+                background: rgba(255, 255, 255, 0.6);
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+            .file-upload:hover {
+                border-color: #C9A96E;
+                background: rgba(255, 255, 255, 0.9);
+            }
+            .file-upload:focus {
+                outline: none;
+                border-color: #C9A96E;
+                box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.12);
+            }
+            .preview-image {
+                max-width: 150px;
+                max-height: 150px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                margin-top: 10px;
+                border: 2px solid rgba(255, 255, 255, 0.8);
+            }
+            .form-footer {
+                margin-top: 30px;
+                display: flex;
+                gap: 15px;
+                align-items: center;
+            }
+            .form-footer .btn-submit {
+                flex: 1;
+                padding: 14px;
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 4px 15px rgba(201, 169, 110, 0.3);
+                font-family: inherit;
+            }
+            .form-footer .btn-submit:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(201, 169, 110, 0.4);
+            }
+            .form-footer .btn-cancel {
+                padding: 14px 30px;
+                background: rgba(255, 255, 255, 0.6);
+                color: #8a6d5b;
+                border-radius: 10px;
+                text-decoration: none;
+                font-size: 15px;
+                font-weight: 500;
+                transition: all 0.3s;
+                border: 1px solid rgba(0, 0, 0, 0.06);
+            }
+            .form-footer .btn-cancel:hover {
+                background: rgba(255, 255, 255, 0.9);
+                border-color: rgba(201, 169, 110, 0.3);
+                color: #5a3a28;
+            }
+        </style>
+
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">[[${goods != null ? '编辑商品' : '添加商品'}]]</h2>
+                <p style="color: #8a6d5b; font-size: 14px; margin-top: 4px;">填写商品信息，完成后点击保存</p>
+            </div>
+        </div>
+        
+        <form th:action="@{/admin/saveGoods}" method="post" enctype="multipart/form-data" class="form-section">
+            <input type="hidden" name="id" th:value="${goods?.id}">
+            
+            <div class="form-grid">
+                <div>
+                    <label class="form-label">商品名称 <span class="required">*</span></label>
+                    <input type="text" name="name" th:value="${goods?.name}" placeholder="请输入商品名称" class="form-control">
+                </div>
+                
+                <div>
+                    <label class="form-label">商品分类 <span class="required">*</span></label>
+                    <select name="type_id" class="form-control">
+                        <option value="">请选择分类</option>
+                        <option th:each="type : ${typeList}" th:value="${type.id}" th:text="${type.name}" th:selected="${goods != null && goods.typeId == type.id}"></option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="form-label">商品价格 <span class="required">*</span></label>
+                    <input type="text" name="price" th:value="${goods?.price}" placeholder="请输入商品价格" class="form-control">
+                </div>
+                
+                <div>
+                    <label class="form-label">商品库存 <span class="required">*</span></label>
+                    <input type="number" name="stock" th:value="${goods?.stock}" placeholder="请输入商品库存" class="form-control">
+                </div>
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <label class="form-label">商品简介</label>
+                <textarea name="intro" rows="4" placeholder="请输入商品简介" class="form-control" th:text="${goods?.intro}"></textarea>
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <label class="form-label">商品主图</label>
+                <input type="file" name="cover" class="file-upload">
+                <div th:if="${goods?.cover != null && !goods.cover.isEmpty()}">
+                    <img th:src="${goods.cover}" alt="当前主图" class="preview-image">
+                </div>
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <label class="form-label">商品图片1</label>
+                <input type="file" name="image1" class="file-upload">
+                <div th:if="${goods?.image1 != null && !goods.image1.isEmpty()}">
+                    <img th:src="${goods.image1}" alt="当前图片1" class="preview-image">
+                </div>
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <label class="form-label">商品图片2</label>
+                <input type="file" name="image2" class="file-upload">
+                <div th:if="${goods?.image2 != null && !goods.image2.isEmpty()}">
+                    <img th:src="${goods.image2}" alt="当前图片2" class="preview-image">
+                </div>
+            </div>
+            
+            <div class="form-footer">
+                <button type="submit" class="btn-submit">保存商品</button>
+                <a th:href="@{/admin/goodsList}" class="btn-cancel">取消</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

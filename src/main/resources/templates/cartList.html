@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的购物车 - 蛋糕系统</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link type="text/css" rel="stylesheet" th:href="@{/css/main.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/zui.min.css}">
+    <script type="text/javascript" th:src="@{/js/jquery-3.0.0.js}"></script>
+    <script type="text/javascript" th:src="@{/js/zui.min.js}"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f8f4f0 0%, #f0ebe5 100%);
+            min-height: 100vh;
+        }
+
+        .cart-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .cart-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(201, 169, 110, 0.15);
+        }
+
+        .cart-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #2d1810;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .cart-header .cart-icon {
+            font-size: 32px;
+            margin-right: 15px;
+            color: #C9A96E;
+        }
+
+        .cart-header .count-badge {
+            margin-left: auto;
+            color: #8a6d5b;
+            font-size: 14px;
+            font-weight: 500;
+            background: rgba(201, 169, 110, 0.1);
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(201, 169, 110, 0.15);
+        }
+
+        .cart-header .count-badge span {
+            color: #A68B5C;
+            font-weight: 700;
+        }
+
+        .cart-table {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(45, 24, 16, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .cart-table thead {
+            background: linear-gradient(135deg, #2d1810, #4a2a1a);
+        }
+
+        .cart-table thead th {
+            color: #F5E6D3;
+            font-weight: 500;
+            padding: 18px 20px;
+            text-align: center;
+            border: none;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .cart-table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(201, 169, 110, 0.08);
+        }
+
+        .cart-table tbody tr:hover {
+            background: rgba(245, 230, 211, 0.2);
+        }
+
+        .cart-table tbody td {
+            padding: 20px;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .product-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin: 0 auto;
+        }
+
+        .product-image:hover {
+            transform: scale(1.05);
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d1810;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #A68B5C;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .qty-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(245, 230, 211, 0.5);
+            color: #8a6d5b;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:hover {
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .qty-btn:focus {
+            outline: none;
+        }
+
+        .qty-btn:active {
+            transform: scale(0.95);
+        }
+
+        .qty-value {
+            min-width: 40px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d1810;
+        }
+
+        .total-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #A68B5C;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .delete-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #c0392b;
+            border: 1px solid rgba(192, 57, 43, 0.25);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+            color: #fff;
+            border-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
+        }
+
+        /* 空购物车 */
+        .empty-cart {
+            text-align: center;
+            padding: 80px 40px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(45, 24, 16, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-cart .empty-icon {
+            font-size: 80px;
+            color: rgba(201, 169, 110, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .empty-cart h3 {
+            font-size: 22px;
+            color: #8a6d5b;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .empty-cart .continue-shopping-link {
+            display: inline-block;
+            padding: 14px 44px;
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Noto Sans SC', sans-serif;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px rgba(201, 169, 110, 0.3);
+        }
+
+        .empty-cart .continue-shopping-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(201, 169, 110, 0.4);
+            text-decoration: none;
+            color: #fff;
+        }
+
+        /* 分页导航 */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 24px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(45, 24, 16, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .pagination-container .page-info {
+            color: #8a6d5b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pagination-container .page-info span {
+            color: #A68B5C;
+            font-weight: 700;
+        }
+
+        .pagination-container a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            text-decoration: none;
+            color: #8a6d5b;
+            font-size: 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            background: rgba(245, 230, 211, 0.3);
+        }
+
+        .pagination-container a:hover {
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .pagination-container .disabled-pagination {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .pagination-container .current-page {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            border-radius: 50%;
+            padding: 0 4px;
+            box-shadow: 0 2px 10px rgba(201, 169, 110, 0.3);
+        }
+
+        /* 购物车汇总 */
+        .cart-summary {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 30px;
+            margin-top: 30px;
+            padding: 25px 30px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(45, 24, 16, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .summary-text {
+            font-size: 18px;
+            color: #8a6d5b;
+            font-weight: 500;
+        }
+
+        .summary-total {
+            font-size: 30px;
+            font-weight: 700;
+            color: #A68B5C;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .checkout-btn {
+            padding: 16px 50px;
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Noto Sans SC', sans-serif;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 20px rgba(201, 169, 110, 0.35);
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(201, 169, 110, 0.45);
+        }
+
+        .checkout-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 支付模态框 - 蛋糕店风格 */
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(45, 24, 16, 0.2);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #2d1810, #4a2a1a);
+            border-radius: 16px 16px 0 0;
+            padding: 20px 24px;
+            border-bottom: none;
+        }
+
+        .modal-header .close {
+            color: rgba(245, 230, 211, 0.6);
+            opacity: 1;
+            text-shadow: none;
+            font-size: 24px;
+        }
+
+        .modal-header .close:hover {
+            color: #C9A96E;
+        }
+
+        .modal-title {
+            color: #F5E6D3;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 28px 24px;
+        }
+
+        .modal-body .form-group label {
+            color: #8a6d5b;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .modal-body .form-control {
+            border: 1px solid rgba(201, 169, 110, 0.2);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .modal-body .form-control:focus {
+            border-color: #C9A96E;
+            box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+        }
+
+        .modal-body .radio label {
+            color: #5a3a28;
+            font-size: 15px;
+        }
+
+        .modal-body .radio input[type="radio"]:checked + .icon {
+            color: #C9A96E;
+        }
+
+        .modal-body .alert-success {
+            background: rgba(245, 230, 211, 0.4);
+            border: 1px solid rgba(201, 169, 110, 0.2);
+            color: #A68B5C;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(201, 169, 110, 0.1);
+            padding: 16px 24px;
+        }
+
+        .modal-footer .btn {
+            border-radius: 10px;
+            padding: 8px 24px;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .modal-footer .btn-default {
+            background: rgba(245, 230, 211, 0.3);
+            border: 1px solid rgba(201, 169, 110, 0.15);
+            color: #8a6d5b;
+        }
+
+        .modal-footer .btn-default:hover {
+            background: rgba(245, 230, 211, 0.5);
+        }
+
+        .modal-footer .btn-primary {
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            border: none;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(201, 169, 110, 0.3);
+        }
+
+        .modal-footer .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201, 169, 110, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .cart-table {
+                font-size: 14px;
+            }
+
+            .product-image {
+                width: 70px;
+                height: 70px;
+            }
+
+            .cart-summary {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .checkout-btn {
+                width: 100%;
+            }
+
+            .cart-header h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <div th:if="${not #strings.isEmpty(msg)}">
+        <script>
+            $(function() {
+                new $.zui.Messager('[[${msg}]]', {
+                    icon: 'bell-alt',
+                    type: 'warning',
+                    placement: 'center'
+                }).show();
+            });
+        </script>
+    </div>
+
+    <div th:replace="admin/commons::topbar"></div>
+
+    <div class="cart-container">
+        <div class="cart-header">
+            <i class="icon icon-shopping-cart cart-icon"></i>
+            <h2>我的购物车</h2>
+            <span class="count-badge">共 <span th:text="${cartList != null ? cartList.size() : 0}"></span> 件商品</span>
+        </div>
+
+        <div th:if="${cartList != null && !cartList.isEmpty()}">
+            <div class="cart-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>商品图片</th>
+                            <th>商品名称</th>
+                            <th>商品价格</th>
+                            <th>数量</th>
+                            <th>总价</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="cart : ${cartList}">
+                            <td>
+                                <div class="product-image">
+                                    <img th:src="@{${cart.goodsCover}}" alt="商品图片">
+                                </div>
+                            </td>
+                            <td class="product-name" th:text="${cart.goodsName}"></td>
+                            <td class="product-price">¥<span th:text="${cart.goodsPrice}"></span></td>
+                            <td>
+                                <div class="quantity-control">
+                                    <button class="qty-btn" th:onclick="'changeCount(' + ${cart.id} + ', -1)'">-</button>
+                                    <span class="qty-value" th:text="${cart.count}"></span>
+                                    <button class="qty-btn" th:onclick="'changeCount(' + ${cart.id} + ', 1)'">+</button>
+                                </div>
+                            </td>
+                            <td class="total-price">¥<span th:text="${cart.total_price}"></span></td>
+                            <td>
+                                <button class="delete-btn" th:onclick="'deleteCart(' + ${cart.id} + ')'">删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${totalPages > 1}" class="pagination-container">
+                <span class="page-info">共 <span>[[${totalItems}]]</span> 件</span>
+                
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <a th:href="@{/cart/cartList(page=${currentPage - 1})}" th:classappend="${currentPage == 1 ? 'disabled-pagination' : ''}">
+                        <</a>
+                    
+                    <span class="current-page">[[${currentPage}]]</span>
+                    
+                    <a th:href="@{/cart/cartList(page=${currentPage + 1})}" th:classappend="${currentPage == totalPages ? 'disabled-pagination' : ''}">
+                        ></a>
+                </div>
+                
+                <span class="page-info">共 <span>[[${totalPages}]]</span> 页</span>
+            </div>
+
+            <div class="cart-summary">
+                <div>
+                    <span class="summary-text">合计：</span>
+                    <span class="summary-total">¥<span th:text="${totalAmount}"></span></span>
+                </div>
+                <button class="checkout-btn" id="checkoutBtn">立即结算</button>
+            </div>
+
+            <div class="modal fade" id="payModal" tabindex="-1" role="dialog" aria-labelledby="payModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title" id="payModalLabel">确认支付</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>支付方式</label>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="payType" value="1" checked>
+                                        <i class="icon icon-credit-card"></i> 微信支付
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="payType" value="2">
+                                        <i class="icon icon-credit-card"></i> 支付宝支付
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>收货人</label>
+                                <input type="text" id="receiverName" class="form-control" th:value="${session.user.username}" placeholder="请输入收货人">
+                            </div>
+                            <div class="form-group">
+                                <label>收货电话</label>
+                                <input type="text" id="receiverPhone" class="form-control" th:value="${session.user.phone}" placeholder="请输入收货电话">
+                            </div>
+                            <div class="form-group">
+                                <label>收货地址</label>
+                                <textarea id="receiverAddress" class="form-control" rows="3" placeholder="请输入收货地址" th:text="${session.user.address}"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>订单金额</label>
+                                <div class="alert alert-success">
+                                    ¥<span th:text="${totalAmount}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="confirmPay">确认支付</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${cartList == null || cartList.isEmpty()}" class="empty-cart">
+            <i class="icon icon-shopping-cart empty-icon"></i>
+            <h3>购物车空空如也</h3>
+            <a th:href="@{/goods/goodsList}" class="continue-shopping-link">去逛逛</a>
+        </div>
+    </div>
+
+    <div th:replace="admin/commons::footbar"></div>
+
+    <script type="text/javascript">
+        function deleteCart(id) {
+            if (confirm('确定删除该商品吗？')) {
+                location.href = "[[@{/cart/deleteCart}]]?id=" + id;
+            }
+        }
+        
+        function changeCount(cartId, delta) {
+            location.href = "[[@{/cart/changeCount}]]?id=" + cartId + "&delta=" + delta;
+        }
+        
+        $(function() {
+            $('#checkoutBtn').click(function() {
+                $('#payModal').modal('show');
+            });
+            
+            $('#confirmPay').click(function() {
+                var payType = $('input[name="payType"]:checked').val();
+                var name = $('#receiverName').val();
+                var phone = $('#receiverPhone').val();
+                var address = $('#receiverAddress').val();
+                location.href = "[[@{/order/pay}]]?payType=" + payType + "&name=" + encodeURIComponent(name) + "&phone=" + encodeURIComponent(phone) + "&address=" + encodeURIComponent(address);
+            });
+        });
+    </script>
+</body>
+</html>

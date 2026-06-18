@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            /* 表单卡片 - 玻璃效果 */
+            .form-section {
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                box-shadow: 0 4px 30px rgba(45, 24, 16, 0.08);
+                padding: 35px;
+                max-width: 600px;
+            }
+            .form-label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #5a3a28;
+                font-size: 14px;
+            }
+            .form-control {
+                width: 100%;
+                padding: 12px 16px;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                font-size: 14px;
+                transition: border-color 0.3s, box-shadow 0.3s;
+                background: rgba(255, 255, 255, 0.8);
+                font-family: inherit;
+            }
+            .form-control:disabled {
+                background: rgba(0, 0, 0, 0.04);
+                color: #8a6d5b;
+                cursor: not-allowed;
+            }
+            .form-group {
+                margin-bottom: 22px;
+            }
+            /* 角色选择器 */
+            .role-options {
+                display: flex;
+                gap: 16px;
+                margin-top: 4px;
+            }
+            .role-option {
+                flex: 1;
+                position: relative;
+            }
+            .role-option input[type="radio"] {
+                position: absolute;
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            .role-option label {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px 16px;
+                border: 2px solid rgba(0, 0, 0, 0.08);
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                background: rgba(255, 255, 255, 0.6);
+                text-align: center;
+                gap: 8px;
+            }
+            .role-option label:hover {
+                border-color: #C9A96E;
+                background: rgba(201, 169, 110, 0.06);
+            }
+            .role-option input[type="radio"]:checked + label {
+                border-color: #C9A96E;
+                background: rgba(201, 169, 110, 0.1);
+                box-shadow: 0 4px 20px rgba(201, 169, 110, 0.2);
+            }
+            .role-option .role-icon {
+                font-size: 28px;
+                margin-bottom: 4px;
+            }
+            .role-option .role-name {
+                font-weight: 600;
+                color: #2d1810;
+                font-size: 15px;
+            }
+            .role-option .role-desc {
+                font-size: 12px;
+                color: #8a6d5b;
+            }
+            .role-option.admin label {
+                border-color: rgba(192, 57, 43, 0.2);
+            }
+            .role-option.admin input[type="radio"]:checked + label {
+                border-color: #c0392b;
+                background: rgba(192, 57, 43, 0.08);
+                box-shadow: 0 4px 20px rgba(192, 57, 43, 0.15);
+            }
+            .role-option.normal label {
+                border-color: rgba(52, 152, 219, 0.2);
+            }
+            .role-option.normal input[type="radio"]:checked + label {
+                border-color: #2980b9;
+                background: rgba(52, 152, 219, 0.08);
+                box-shadow: 0 4px 20px rgba(52, 152, 219, 0.15);
+            }
+            .form-footer {
+                margin-top: 30px;
+                display: flex;
+                gap: 15px;
+                align-items: center;
+            }
+            .btn-submit {
+                padding: 12px 32px;
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 4px 15px rgba(201, 169, 110, 0.3);
+                font-family: inherit;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .btn-submit:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(201, 169, 110, 0.4);
+            }
+            .btn-cancel {
+                padding: 12px 30px;
+                background: rgba(255, 255, 255, 0.6);
+                color: #8a6d5b;
+                border-radius: 10px;
+                text-decoration: none;
+                font-size: 15px;
+                font-weight: 500;
+                transition: all 0.3s;
+                border: 1px solid rgba(0, 0, 0, 0.06);
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-family: inherit;
+            }
+            .btn-cancel:hover {
+                background: rgba(255, 255, 255, 0.9);
+                border-color: rgba(201, 169, 110, 0.3);
+                color: #5a3a28;
+            }
+        </style>
+
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">权限管理</h2>
+                <p style="color: #8a6d5b; font-size: 14px; margin-top: 4px;">设置用户角色与权限</p>
+            </div>
+        </div>
+
+        <!-- 表单卡片 -->
+        <form method="post" action="/admin/setAdmin" class="form-section">
+            <input type="hidden" name="userId" th:value="${user.id}">
+
+            <div class="form-group">
+                <label class="form-label">用户名</label>
+                <input type="text" th:value="${user.username}" disabled class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">用户角色</label>
+                <div class="role-options">
+                    <div class="role-option admin">
+                        <input type="radio" name="isadmin" value="1" id="roleAdmin" th:checked="${user.isadmin == '1'}">
+                        <label for="roleAdmin">
+                            <span class="role-icon">🔑</span>
+                            <span class="role-name">管理员</span>
+                            <span class="role-desc">拥有系统全部管理权限</span>
+                        </label>
+                    </div>
+                    <div class="role-option normal">
+                        <input type="radio" name="isadmin" value="0" id="roleNormal" th:checked="${user.isadmin == '0'}">
+                        <label for="roleNormal">
+                            <span class="role-icon">👤</span>
+                            <span class="role-name">普通用户</span>
+                            <span class="role-desc">仅可浏览和下单购买</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit" class="btn-submit">保存设置</button>
+                <a th:href="@{/admin/userList}" class="btn-cancel">取消</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

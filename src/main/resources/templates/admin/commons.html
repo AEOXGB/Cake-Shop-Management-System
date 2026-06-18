@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<style>
+/* ===== 前端导航栏 ===== */
+.navbar-cake {
+    background: linear-gradient(135deg, #2d1810 0%, #4a2a1a 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 25px rgba(45, 24, 16, 0.3);
+    padding: 8px 0;
+}
+
+.navbar-cake .navbar-brand {
+    color: #C9A96E !important;
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.navbar-cake .navbar-nav > li > a {
+    color: rgba(245, 230, 211, 0.8) !important;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 15px 18px;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    margin: 4px 2px;
+}
+
+.navbar-cake .navbar-nav > li > a:hover,
+.navbar-cake .navbar-nav > li.active > a {
+    color: #C9A96E !important;
+    background: rgba(201, 169, 110, 0.12) !important;
+}
+
+.navbar-cake .navbar-nav > li.active > a {
+    color: #F5E6D3 !important;
+    font-weight: 600;
+}
+
+.navbar-cake .navbar-nav > .dropdown.open > a {
+    background: rgba(201, 169, 110, 0.15) !important;
+    color: #C9A96E !important;
+}
+
+.navbar-cake .navbar-nav > .dropdown.open .dropdown-menu {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    padding: 8px;
+    margin-top: 8px;
+}
+
+.navbar-cake .navbar-nav > .dropdown.open .dropdown-menu > li > a {
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #5a3a28;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.navbar-cake .navbar-nav > .dropdown.open .dropdown-menu > li > a:hover {
+    background: rgba(201, 169, 110, 0.12);
+    color: #C9A96E;
+}
+
+.navbar-cake .navbar-nav > li > a > .caret {
+    border-top-color: rgba(245, 230, 211, 0.5);
+}
+
+.navbar-cake .navbar-right .label-badge {
+    background: linear-gradient(135deg, #C9A96E, #A68B5C) !important;
+    position: relative;
+    top: -8px;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 10px;
+}
+
+/* 搜索框 */
+.navbar-cake .form-search .search-box .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(245, 230, 211, 0.2);
+    border-radius: 20px;
+    color: #F5E6D3;
+    padding: 10px 18px;
+    height: 40px;
+}
+
+.navbar-cake .form-search .search-box .form-control::placeholder {
+    color: rgba(245, 230, 211, 0.5);
+}
+
+.navbar-cake .form-search .search-box .form-control:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(201, 169, 110, 0.4);
+    box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.1);
+}
+
+.navbar-cake .form-search .search-box .search-icon {
+    color: rgba(245, 230, 211, 0.5);
+}
+
+.navbar-cake .form-search .btn-primary {
+    background: linear-gradient(135deg, #C9A96E, #A68B5C);
+    border: none;
+    border-radius: 20px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.navbar-cake .form-search .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(201, 169, 110, 0.4);
+}
+
+/* ===== 页脚 ===== */
+.footer-cake {
+    background: linear-gradient(135deg, #1a1410 0%, #2d1810 100%);
+    padding: 50px 60px 30px;
+    color: rgba(245, 230, 211, 0.7);
+    margin-top: 60px;
+    border-top: 1px solid rgba(201, 169, 110, 0.1);
+}
+
+.footer-cake h1.friend_t img {
+    opacity: 0.5;
+}
+
+.footer-cake .friend_list ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 30px;
+}
+
+.footer-cake .friend_list ul li a {
+    color: rgba(245, 230, 211, 0.5);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 14px;
+    border: 1px solid rgba(201, 169, 110, 0.1);
+    border-radius: 20px;
+    display: inline-block;
+    transition: all 0.3s;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.footer-cake .friend_list ul li a:hover {
+    color: #C9A96E;
+    border-color: rgba(201, 169, 110, 0.3);
+    background: rgba(201, 169, 110, 0.08);
+}
+
+.footer-cake #footer {
+    text-align: center;
+    padding-top: 25px;
+    border-top: 1px solid rgba(201, 169, 110, 0.08);
+}
+
+.footer-cake #footer p {
+    margin: 6px 0;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.footer-cake #footer a {
+    color: rgba(201, 169, 110, 0.7);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-cake #footer a:hover {
+    color: #C9A96E;
+}
+
+.footer-cake .copyright {
+    color: rgba(245, 230, 211, 0.35);
+    font-size: 12px;
+    margin-top: 15px;
+}
+</style>
+
+<nav class="navbar navbar-cake" role="navigation" th:fragment="topbar">
+    <div class="container-fluid" style="padding-left: 40px; padding-right: 40px;">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-example">
+                <span class="sr-only">切换导航</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" th:href="@{/login.html}">🍰 蛋糕系统</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-collapse-example">
+            <ul class="nav navbar-nav">
+                <li th:classappend="${active==1?'active':''}"><a th:href="@{/goods/goodsList}">首页</a></li>
+
+                <th:block th:if="${#request.requestURI != '/cart/cartList' && !#request.requestURI.contains('/order/myOrders') && !#request.requestURI.contains('/goods/topSell') && !#request.requestURI.contains('/goods/newArrivals')}">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">商品分类 <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li th:each="type:${types}">
+                                <a th:href="@{/goods/goodsList(typeid=${type.id})}">[[${type.name}]]</a>
+                            </li>
+                        </ul>
+                    </li>
+                </th:block>
+
+                <li th:classappend="${active==10?'active':''}"><a th:href="@{/goods/topSell}">🔥 热销</a></li>
+                <li th:classappend="${active==11?'active':''}"><a th:href="@{/goods/newArrivals}">✨ 新品</a></li>
+                <li><a th:href="@{/register.html}">注册</a></li>
+                <li><a th:href="@{/user/loginout}">退出登录</a></li>
+                <li><a th:href="@{/order/myOrders}">我的订单</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right" style="padding-right:20px;">
+                <li><a th:href="@{/cart/cartList}"><i class="icon icon-shopping-cart icon-2x"></i><span class="label label-badge" th:text="${count}">0</span></a></li>
+            </ul>
+
+            <th:block th:if="${#request.requestURI != '/cart/cartList' && !#request.requestURI.contains('/order/myOrders') && !#request.requestURI.contains('/goods/topSell') && !#request.requestURI.contains('/goods/newArrivals')}">
+                <form class="navbar-form navbar-right form-search" role="search">
+                    <div class="input-group">
+                        <div class="input-control search-box search-box-circle has-icon-left has-icon-right search-example" id="searchboxExample">
+                            <input id="name" name="name" type="search" class="form-control search-input" placeholder="搜索商品...">
+                            <label for="name" class="input-control-icon-left search-icon" style="margin-top:-3px;"><i class="icon icon-search"></i></label>
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="button" onclick="queryGood()">搜索</button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </th:block>
+        </div>
+    </div>
+</nav>
+
+<div th:fragment="footbar">
+    <div class="footer-cake">
+        <div id="friend">
+            <h1 class="friend_t"><img th:src="@{/images/friend_ico.gif}"/></h1>
+            <div class="friend_list">
+                <ul>
+                    <li><a href="#">百度外卖</a></li>
+                    <li><a href="#">美团外卖</a></li>
+                    <li><a href="#">饿了么</a></li>
+                    <li><a href="#">百度</a></li>
+                    <li><a href="#">谷歌</a></li>
+                    <li><a href="#">新浪</a></li>
+                    <li><a href="#">网易</a></li>
+                    <li><a href="#">搜狐</a></li>
+                    <li><a href="#">人人</a></li>
+                    <li><a href="#">星巴克专星送</a></li>
+                    <li><a href="#">海底捞外送</a></li>
+                    <li><a href="#">KFC宅急送</a></li>
+                    <li><a href="#">到家美食会</a></li>
+                    <li><a href="#">麦乐送</a></li>
+                    <li><a href="#">口碑</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="footer">
+            <p>24小时客户服务热线：010-68988888 &nbsp;&nbsp; <a href="#">常见问题解答</a> &nbsp;&nbsp; 投诉热线：010-627488888</p>
+            <p>文明办网文明上网举报电话：010-627488888 &nbsp;&nbsp; 举报邮箱：<a href="#">jubao@jb-aptech.com.cn</a></p>
+            <p class="copyright">Copyright &copy; 1999-2026 News China gov, All Right Reserver &nbsp;|&nbsp; 网龙网络有限公司 版权所有</p>
+        </div>
+    </div>
+</div>

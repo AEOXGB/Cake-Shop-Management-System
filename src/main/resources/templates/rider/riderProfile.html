@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>骑手个人中心</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 20px; font-weight: 600; }
+        header .logout { background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; font-size: 13px; cursor: pointer; }
+        .profile-container { padding: 20px; }
+        .user-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; }
+        .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
+        .avatar svg { width: 40px; height: 40px; color: white; }
+        .user-name { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 5px; }
+        .user-phone { font-size: 14px; color: #999; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: white; border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .stat-card .number { font-size: 24px; font-weight: 700; color: #667eea; }
+        .stat-card .label { font-size: 12px; color: #999; margin-top: 5px; }
+        .menu-list { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .menu-item { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:hover { background: #f8f9fa; }
+        .menu-item svg { width: 20px; height: 20px; color: #667eea; margin-right: 15px; }
+        .menu-item span { font-size: 14px; color: #333; }
+        .menu-item .arrow { margin-left: auto; color: #ccc; }
+        .menu-item.logout-item svg { color: #ff5252; }
+        .menu-item.logout-item span:first-of-type { color: #ff5252; }
+        footer { background: white; padding: 15px; display: flex; justify-content: space-around; border-top: 1px solid #eee; position: fixed; bottom: 0; left: 0; right: 0; }
+        .footer-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #999; cursor: pointer; }
+        .footer-item.active { color: #667eea; }
+        .footer-item svg { width: 24px; height: 24px; }
+        .footer-item span { font-size: 12px; }
+        
+        /* ===== 夜间模式样式 ===== */
+        body.dark-mode { background: #1a1a2e; }
+        body.dark-mode .profile-card { background: #16213e; }
+        body.dark-mode .profile-card .info { color: #b3b3b3; }
+        body.dark-mode .menu-list { background: #16213e; }
+        body.dark-mode .menu-item { border-bottom-color: #2d3436; }
+        body.dark-mode .menu-item .text { color: #e0d5c8; }
+        body.dark-mode .menu-item .arrow { color: #666; }
+        body.dark-mode footer { background: #16213e; }
+        body.dark-mode .footer-item { color: #666; }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>个人中心</h1>
+        <a href="/rider/logout" class="logout">退出</a>
+    </header>
+
+    <div class="profile-container">
+        <div class="user-card">
+            <div class="avatar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="user-name">[[${rider.name}]]</div>
+            <div class="user-phone">[[${rider.phone}]]</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number">[[${todayCount}]]</div>
+                <div class="label">今日配送</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">[[${monthCount}]]</div>
+                <div class="label">本月配送</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">[[${totalOrders}]]</div>
+                <div class="label">累计配送</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">¥[[${totalIncome}]]</div>
+                <div class="label">累计收入</div>
+            </div>
+        </div>
+
+        <div class="menu-list">
+            <div class="menu-item" onclick="location.href='/rider/completedOrders'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9"/></svg>
+                <span>订单记录</span>
+                <span class="arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="location.href='/rider/income'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+                <span>收入明细</span>
+                <span class="arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="location.href='/rider/notifications'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 12a4 4 0 1 0-8 0 4 4 0 0 0 8 0zm0 0v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-9 9m4.5-1.206a8.959 8.959 0 0 1-4.5 1.207"/></svg>
+                <span>消息通知</span>
+                <span class="arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="location.href='/rider/settings'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
+                <span>设置</span>
+                <span class="arrow">›</span>
+            </div>
+            <div class="menu-item logout-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                <span>退出登录</span>
+                <span class="arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-item" onclick="location.href='/rider/index'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>首页</span>
+        </div>
+        <div class="footer-item" onclick="location.href='/rider/pendingOrders'">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9"/></svg>
+            <span>订单</span>
+        </div>
+        <div class="footer-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>我的</span>
+        </div>
+    </footer>
+
+    <script>
+        // ===== 夜间模式和字体大小初始化 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // 夜间模式初始化
+            var nightMode = localStorage.getItem('nightMode');
+            if (nightMode === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // 字体大小初始化
+            var fontSize = localStorage.getItem('fontSize');
+            if (fontSize) {
+                document.documentElement.style.fontSize = fontSize + 'px';
+            }
+        });
+    </script>
+</body>
+</html>

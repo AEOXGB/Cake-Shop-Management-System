@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            /* 管理员设置页面样式 */
+            .settings-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                gap: 22px;
+            }
+            
+            .setting-card {
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                box-shadow: 0 4px 30px rgba(45, 24, 16, 0.08);
+                padding: 28px;
+                transition: all 0.3s ease;
+            }
+            
+            .setting-card:hover {
+                box-shadow: 0 8px 30px rgba(45, 24, 16, 0.1);
+                transform: translateY(-2px);
+            }
+            
+            .setting-card .card-header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 20px;
+                padding-bottom: 14px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            }
+            
+            .setting-card .card-header .card-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                color: #fff;
+            }
+            
+            .setting-card .card-header .card-icon.icon-night {
+                background: linear-gradient(135deg, #2c3e50, #3498db);
+            }
+            .setting-card .card-header .card-icon.icon-language {
+                background: linear-gradient(135deg, #8e44ad, #3498db);
+            }
+            .setting-card .card-header .card-icon.icon-password {
+                background: linear-gradient(135deg, #e67e22, #f39c12);
+            }
+            .setting-card .card-header .card-icon.icon-log {
+                background: linear-gradient(135deg, #27ae60, #2ecc71);
+            }
+            .setting-card .card-header .card-icon.icon-font {
+                background: linear-gradient(135deg, #3498db, #9b59b6);
+            }
+            
+            .setting-card .card-header .card-title {
+                font-size: 17px;
+                font-weight: 600;
+                color: #2d1810;
+            }
+            
+            .setting-card .card-header .card-subtitle {
+                font-size: 12px;
+                color: #8a6d5b;
+            }
+            
+            /* 开关样式 */
+            .switch-wrapper {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 0;
+            }
+            .switch-wrapper .switch-label {
+                font-size: 14px;
+                color: #5a3a28;
+            }
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 52px;
+                height: 28px;
+            }
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: #ccc;
+                transition: 0.3s;
+                border-radius: 28px;
+            }
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 20px; width: 20px;
+                left: 4px; bottom: 4px;
+                background: #fff;
+                transition: 0.3s;
+                border-radius: 50%;
+            }
+            .switch input:checked + .slider {
+                background: linear-gradient(135deg, #2c3e50, #1a252f);
+            }
+            .switch input:checked + .slider:before {
+                transform: translateX(24px);
+            }
+            
+            /* 语言选择 */
+            .language-select-wrapper {
+                padding: 8px 0;
+            }
+            .language-select-wrapper select {
+                width: 100%;
+                padding: 12px 16px;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                font-size: 14px;
+                background: rgba(255, 255, 255, 0.8);
+                font-family: inherit;
+                transition: border-color 0.3s, box-shadow 0.3s;
+                cursor: pointer;
+            }
+            .language-select-wrapper select:focus {
+                outline: none;
+                border-color: #C9A96E;
+                box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.12);
+            }
+            
+            /* 字体大小选择 */
+            .font-size-wrapper {
+                padding: 8px 0;
+            }
+            .font-size-wrapper select {
+                width: 100%;
+                padding: 12px 16px;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                font-size: 14px;
+                background: rgba(255, 255, 255, 0.8);
+                font-family: inherit;
+                transition: border-color 0.3s, box-shadow 0.3s;
+                cursor: pointer;
+            }
+            .font-size-wrapper select:focus {
+                outline: none;
+                border-color: #C9A96E;
+                box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.12);
+            }
+            
+            /* 密码表单 */
+            .password-form .form-group {
+                margin-bottom: 16px;
+            }
+            .password-form .form-group label {
+                display: block;
+                margin-bottom: 6px;
+                font-weight: 500;
+                color: #5a3a28;
+                font-size: 13px;
+            }
+            .password-form .form-group input {
+                width: 100%;
+                padding: 11px 15px;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                font-size: 14px;
+                background: rgba(255, 255, 255, 0.8);
+                transition: border-color 0.3s, box-shadow 0.3s;
+                font-family: inherit;
+            }
+            .password-form .form-group input:focus {
+                outline: none;
+                border-color: #C9A96E;
+                box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.12);
+                background: #fff;
+            }
+            .password-form .btn-save {
+                width: 100%;
+                padding: 12px;
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 4px 15px rgba(201, 169, 110, 0.3);
+                font-family: inherit;
+            }
+            .password-form .btn-save:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(201, 169, 110, 0.4);
+            }
+            
+            /* 操作日志入口 */
+            .log-entry {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 0;
+            }
+            .log-entry .log-info .log-count {
+                font-size: 28px;
+                font-weight: 700;
+                color: #2d1810;
+                font-family: 'Playfair Display', serif;
+            }
+            .log-entry .log-info .log-desc {
+                font-size: 13px;
+                color: #8a6d5b;
+            }
+            .log-entry .btn-view {
+                padding: 10px 24px;
+                background: linear-gradient(135deg, #27ae60, #2ecc71);
+                color: #fff;
+                border: none;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                text-decoration: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+                font-family: inherit;
+            }
+            .log-entry .btn-view:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+            }
+            
+            /* 提示消息 */
+            .alert-success {
+                background: rgba(39, 174, 96, 0.1);
+                border: 1px solid rgba(39, 174, 96, 0.2);
+                color: #27ae60;
+                padding: 12px 18px;
+                border-radius: 10px;
+                font-size: 14px;
+                margin-bottom: 20px;
+                display: none;
+            }
+            .alert-error {
+                background: rgba(231, 76, 60, 0.1);
+                border: 1px solid rgba(231, 76, 60, 0.2);
+                color: #c0392b;
+                padding: 12px 18px;
+                border-radius: 10px;
+                font-size: 14px;
+                margin-bottom: 20px;
+                display: none;
+            }
+            
+            /* 夜间模式样式 */
+            body.night-mode .setting-card {
+                background: rgba(30, 30, 40, 0.92);
+                border-color: rgba(255, 255, 255, 0.08);
+            }
+            body.night-mode .setting-card .card-header .card-title {
+                color: #e0d5c8;
+            }
+            body.night-mode .setting-card .card-header {
+                border-bottom-color: rgba(255, 255, 255, 0.08);
+            }
+            body.night-mode .switch-wrapper .switch-label {
+                color: #c0b5a8;
+            }
+            body.night-mode .password-form .form-group label {
+                color: #c0b5a8;
+            }
+            body.night-mode .password-form .form-group input {
+                background: rgba(40, 40, 55, 0.8);
+                border-color: rgba(255, 255, 255, 0.1);
+                color: #e0d5c8;
+            }
+            body.night-mode .password-form .form-group input:focus {
+                background: rgba(50, 50, 65, 0.9);
+            }
+            body.night-mode .language-select-wrapper select {
+                background: rgba(40, 40, 55, 0.8);
+                border-color: rgba(255, 255, 255, 0.1);
+                color: #e0d5c8;
+            }
+            body.night-mode .log-entry .log-info .log-count {
+                color: #e0d5c8;
+            }
+            body.night-mode .log-entry .log-info .log-desc {
+                color: #a09080;
+            }
+        </style>
+
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">管理员设置</h2>
+                <p style="color: #8a6d5b; font-size: 14px; margin-top: 4px;">个性化设置与安全配置</p>
+            </div>
+        </div>
+        
+        <!-- 密码修改成功提示 -->
+        <div id="passwordSuccessAlert" class="alert-success" th:if="${passwordChanged}" style="display: block;">
+            ✅ 密码修改成功！
+        </div>
+        <!-- 密码修改失败提示 -->
+        <div id="passwordErrorAlert" class="alert-error">❌ 密码修改失败，请检查原密码是否正确</div>
+
+        <div class="settings-grid">
+            <!-- 夜间模式设置卡片 -->
+            <div class="setting-card">
+                <div class="card-header">
+                    <div class="card-icon icon-night">🌙</div>
+                    <div>
+                        <div class="card-title">夜间模式</div>
+                        <div class="card-subtitle">切换深色主题以保护眼睛</div>
+                    </div>
+                </div>
+                <div class="switch-wrapper">
+                    <span class="switch-label">启用夜间模式</span>
+                    <label class="switch">
+                        <input type="checkbox" id="nightModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <p style="color: #8a6d5b; font-size: 12px; margin-top: 8px;">
+                    开启后将使用深色背景，降低屏幕亮度
+                </p>
+            </div>
+            
+            <!-- 中英文切换卡片 -->
+            <div class="setting-card">
+                <div class="card-header">
+                    <div class="card-icon icon-language">🌐</div>
+                    <div>
+                        <div class="card-title">界面语言</div>
+                        <div class="card-subtitle">选择你偏好的显示语言</div>
+                    </div>
+                </div>
+                <div class="language-select-wrapper">
+                    <select id="languageSelect">
+                        <option value="zh">中文（简体）</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <p style="color: #8a6d5b; font-size: 12px; margin-top: 8px;">
+                    切换后界面文字将实时更新
+                </p>
+            </div>
+            
+            <!-- 字体大小设置卡片 -->
+            <div class="setting-card">
+                <div class="card-header">
+                    <div class="card-icon icon-font">📝</div>
+                    <div>
+                        <div class="card-title">字体大小</div>
+                        <div class="card-subtitle">调整界面文字大小</div>
+                    </div>
+                </div>
+                <div class="font-size-wrapper">
+                    <select id="fontSizeSelect">
+                        <option value="small">小字体</option>
+                        <option value="normal">默认</option>
+                        <option value="large">大字体</option>
+                        <option value="xlarge">特大字体</option>
+                    </select>
+                </div>
+                <p style="color: #8a6d5b; font-size: 12px; margin-top: 8px;">
+                    调整后界面文字大小将实时更新
+                </p>
+            </div>
+            
+            <!-- 修改密码卡片 -->
+            <div class="setting-card">
+                <div class="card-header">
+                    <div class="card-icon icon-password">🔒</div>
+                    <div>
+                        <div class="card-title">修改密码</div>
+                        <div class="card-subtitle">定期更换密码提高账户安全性</div>
+                    </div>
+                </div>
+                <form class="password-form" th:action="@{/admin/changePassword}" method="post" onsubmit="return validatePasswordForm()">
+                    <div class="form-group">
+                        <label>原密码</label>
+                        <input type="password" name="oldPassword" id="oldPassword" placeholder="请输入原密码" required>
+                    </div>
+                    <div class="form-group">
+                        <label>新密码</label>
+                        <input type="password" name="newPassword" id="newPassword" placeholder="请输入新密码" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>确认新密码</label>
+                        <input type="password" name="confirmPassword" id="confirmPassword" placeholder="请再次输入新密码" required>
+                    </div>
+                    <button type="submit" class="btn-save">保存修改</button>
+                </form>
+            </div>
+            
+            <!-- 操作日志入口卡片 -->
+            <div class="setting-card">
+                <div class="card-header">
+                    <div class="card-icon icon-log">📋</div>
+                    <div>
+                        <div class="card-title">操作日志</div>
+                        <div class="card-subtitle">查看所有管理员和用户的操作记录</div>
+                    </div>
+                </div>
+                <div class="log-entry">
+                    <div class="log-info">
+                        <div class="log-count" th:text="${logCount}">0</div>
+                        <div class="log-desc">条操作记录</div>
+                    </div>
+                    <a th:href="@{/admin/operationLogs}" class="btn-view">查看全部日志</a>
+                </div>
+            </div>
+        </div>
+        
+        <script type="text/javascript">
+            $(function() {
+                // ===== 夜间模式 =====
+                // 加载保存的夜间模式状态
+                if (localStorage.getItem('nightMode') === 'enabled') {
+                    $('body').addClass('night-mode');
+                    $('#nightModeToggle').prop('checked', true);
+                }
+                
+                // 切换夜间模式
+                $('#nightModeToggle').change(function() {
+                    if ($(this).is(':checked')) {
+                        $('body').addClass('night-mode');
+                        localStorage.setItem('nightMode', 'enabled');
+                    } else {
+                        $('body').removeClass('night-mode');
+                        localStorage.setItem('nightMode', 'disabled');
+                    }
+                });
+                
+                // ===== 语言切换 =====
+                // 加载保存的语言设置（只设置select值，不触发刷新）
+                var savedLang = localStorage.getItem('adminLang');
+                if (savedLang) {
+                    $('#languageSelect').val(savedLang);
+                }
+                
+                // 切换语言
+                $('#languageSelect').change(function() {
+                    var lang = $(this).val();
+                    localStorage.setItem('adminLang', lang);
+                    
+                    // 如果切换到中文，直接刷新页面让服务器重新渲染
+                    if (lang === 'zh') {
+                        location.reload();
+                        return;
+                    }
+                    
+                    // 切换到英文，执行翻译
+                    window.translatePage(lang);
+                    
+                    // 更新语言选择框的选项文本
+                    $('#languageSelect option:eq(0)').text('Chinese (Simplified)');
+                    $('#languageSelect option:eq(1)').text('English');
+                });
+                
+                // ===== 字体大小设置 =====
+                // 加载保存的字体大小设置
+                var savedFontSize = localStorage.getItem('adminFontSize');
+                if (savedFontSize) {
+                    $('#fontSizeSelect').val(savedFontSize);
+                    applyFontSize(savedFontSize);
+                }
+                
+                // 切换字体大小
+                $('#fontSizeSelect').change(function() {
+                    var fontSize = $(this).val();
+                    localStorage.setItem('adminFontSize', fontSize);
+                    applyFontSize(fontSize);
+                });
+                
+                function applyFontSize(fontSize) {
+                    var sizeValue = '14px';
+                    switch(fontSize) {
+                        case 'small': sizeValue = '12px'; break;
+                        case 'normal': sizeValue = '14px'; break;
+                        case 'large': sizeValue = '16px'; break;
+                        case 'xlarge': sizeValue = '18px'; break;
+                    }
+                    $('body').css('font-size', sizeValue);
+                }
+                
+                // ===== 显示提示消息 =====
+                if ($('#passwordSuccessAlert').is(':visible')) {
+                    setTimeout(function() {
+                        $('#passwordSuccessAlert').fadeOut();
+                    }, 3000);
+                }
+            });
+            
+            // ===== 密码表单验证 =====
+            function validatePasswordForm() {
+                var oldPwd = $('#oldPassword').val().trim();
+                var newPwd = $('#newPassword').val().trim();
+                var confirmPwd = $('#confirmPassword').val().trim();
+                
+                if (!oldPwd) {
+                    alert('请输入原密码');
+                    return false;
+                }
+                if (!newPwd) {
+                    alert('请输入新密码');
+                    return false;
+                }
+                if (newPwd.length < 6) {
+                    alert('新密码长度不能少于6位');
+                    return false;
+                }
+                if (newPwd !== confirmPwd) {
+                    alert('两次输入的新密码不一致');
+                    return false;
+                }
+                if (oldPwd === newPwd) {
+                    alert('新密码不能与原密码相同');
+                    return false;
+                }
+                return true;
+            }
+        </script>
+        <script>
+        // 确保页面加载后也执行翻译
+        $(document).ready(function() {
+            var savedLang = localStorage.getItem('adminLang') || 'zh';
+            if (savedLang === 'en') {
+                setTimeout(function() {
+                    if (typeof window.translatePage === 'function') {
+                        window.translatePage('en');
+                    }
+                }, 100);
+            }
+        });
+        </script>
+    </div>
+</body>
+</html>

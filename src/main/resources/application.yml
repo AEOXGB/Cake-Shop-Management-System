@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/cookieshop?characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password:
+  application:
+    name: CakeShop
+  thymeleaf:
+    cache: false
+  mvc:
+    hidden method:
+      filter:
+        enabled: true
+    static-path-pattern: /**
+  resources:
+    static-locations: classpath:/static/
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+
+logging:
+  level:
+    '[com.fr.mapper]': debug  #日志等级
+server:
+  port: 8090
+
+# AI客服配置
+ai:
+  chat:
+    api-key: ark-77b50cb9-c21e-4554-b578-4662d405cc08-1750b
+    model: ep-20260610093604-sglqd
+    api-url: https://ark.cn-beijing.volces.com/api/v3/chat/completions
+

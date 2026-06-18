@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            /* 用户角色标签 */
+            .user-role {
+                display: inline-block;
+                padding: 4px 14px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            .user-role.admin {
+                background: rgba(231, 76, 60, 0.15);
+                color: #c0392b;
+            }
+            .user-role.normal {
+                background: rgba(52, 152, 219, 0.15);
+                color: #2980b9;
+            }
+            .user-role.rider {
+                background: rgba(46, 204, 113, 0.15);
+                color: #27ae60;
+            }
+            /* 操作按钮 */
+            .action-link {
+                display: inline-block;
+                padding: 6px 14px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-size: 12px;
+                font-weight: 500;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                cursor: pointer;
+            }
+            .action-link:hover {
+                transform: translateY(-1px);
+            }
+            .action-link.edit {
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(201, 169, 110, 0.25);
+                margin-right: 4px;
+            }
+            .action-link.edit:hover {
+                box-shadow: 0 6px 20px rgba(201, 169, 110, 0.35);
+            }
+            .action-link.freeze {
+                background: linear-gradient(135deg, #e67e22, #f39c12);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(230, 126, 34, 0.2);
+            }
+            .action-link.freeze:hover {
+                box-shadow: 0 6px 20px rgba(230, 126, 34, 0.3);
+            }
+            /* 分页导航 */
+            .pagination-nav {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                margin-top: 25px;
+            }
+            .pagination-nav a, .pagination-nav span {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 38px;
+                height: 38px;
+                padding: 0 12px;
+                border-radius: 8px;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                border: 1px solid rgba(0, 0, 0, 0.06);
+                background: rgba(255, 255, 255, 0.6);
+                color: #8a6d5b;
+            }
+            .pagination-nav a:hover {
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                border-color: transparent;
+                box-shadow: 0 4px 12px rgba(201, 169, 110, 0.3);
+                transform: translateY(-1px);
+            }
+            .pagination-nav .current {
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                border-color: transparent;
+                box-shadow: 0 4px 12px rgba(201, 169, 110, 0.3);
+            }
+            .pagination-nav .disabled {
+                color: #bbb;
+                cursor: not-allowed;
+                pointer-events: none;
+                opacity: 0.5;
+            }
+            /* 底部统计 */
+            .stats-footer {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 14px 24px;
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(20px);
+                border-radius: 14px;
+                margin-top: 25px;
+                box-shadow: 0 4px 20px rgba(45, 24, 16, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                color: #8a6d5b;
+                font-size: 14px;
+            }
+            .stats-footer em {
+                font-style: normal;
+                color: #C9A96E;
+                font-weight: 700;
+            }
+            /* 空状态 */
+            .empty-state {
+                padding: 50px;
+                text-align: center;
+                color: #b8a99a;
+                font-size: 15px;
+            }
+        </style>
+
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">用户列表</h2>
+                <p style="color: #8a6d5b; font-size: 14px; margin-top: 4px;">管理所有已审核用户账户</p>
+            </div>
+        </div>
+
+        <!-- 用户表格 -->
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>用户名</th>
+                    <th>邮箱</th>
+                    <th>姓名</th>
+                    <th>电话</th>
+                    <th>地址</th>
+                    <th>角色</th>
+                    <th style="text-align:center;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${userList}">
+                    <td style="font-weight:500; color:#2d1810;">[[${user.username}]]</td>
+                    <td style="color:#666;">[[${user.email}]]</td>
+                    <td style="color:#666;">[[${user.name}]]</td>
+                    <td style="color:#666;">[[${user.phone}]]</td>
+                    <td style="color:#888; font-size:13px;">[[${user.address}]]</td>
+                    <td>
+                        <span th:text="${user.isadmin == '1' ? '管理员' : (user.isadmin == '2' ? '骑手' : '普通用户')}" 
+                              th:class="'user-role ' + (${user.isadmin == '1'} ? 'admin' : (user.isadmin == '2' ? 'rider' : 'normal'))"></span>
+                    </td>
+                    <td style="text-align:center; white-space:nowrap;">
+                        <a th:href="@{/admin/editUser(userId=${user.id})}" class="action-link edit">修改</a>
+                        <a th:href="@{/admin/freezeUser(userId=${user.id})}" 
+                           onclick="return confirm('确定要冻结此用户吗？冻结后用户将无法登录。')" class="action-link freeze">冻结</a>
+                    </td>
+                </tr>
+                <!-- 空数据提示 -->
+                <tr th:if="${userList == null || userList.isEmpty()}">
+                    <td colspan="7" class="empty-state">暂无已审核用户</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 底部统计与分页 -->
+        <div th:if="${totalPages > 1}" class="stats-footer">
+            <span style="margin-right: 20px;">共 <em>[[${totalItems}]]</em> 条记录</span>
+            <div class="pagination-nav">
+                <a th:if="${currentPage > 1}" th:href="@{/admin/userStats(page=${currentPage - 1})}">上一页</a>
+                <span th:if="${currentPage <= 1}" class="disabled">上一页</span>
+                
+                <span th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
+                    <a th:if="${pageNum != currentPage}" th:href="@{/admin/userStats(page=${pageNum})}" th:text="${pageNum}">1</a>
+                    <span th:if="${pageNum == currentPage}" class="current" th:text="${pageNum}">1</span>
+                </span>
+                
+                <a th:if="${currentPage < totalPages}" th:href="@{/admin/userStats(page=${currentPage + 1})}">下一页</a>
+                <span th:if="${currentPage >= totalPages}" class="disabled">下一页</span>
+            </div>
+        </div>
+
+        <!-- 无分页时显示统计 -->
+        <div th:if="${totalPages <= 1}" class="stats-footer">
+            共 <em>[[${totalItems}]]</em> 条记录
+        </div>
+    </div>
+</body>
+</html>

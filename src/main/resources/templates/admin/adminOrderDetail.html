@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            /* 页面专用样式 - 订单详情 */
+            .detail-section {
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.6);
+                box-shadow: 0 4px 30px rgba(45, 24, 16, 0.08);
+                padding: 28px;
+                margin-bottom: 20px;
+                animation: fadeInUp 0.5s ease;
+            }
+            .detail-section:last-child {
+                margin-bottom: 0;
+            }
+            .section-title {
+                font-size: 17px;
+                font-weight: 600;
+                color: #2d1810;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .info-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .info-item {
+                padding: 8px 0;
+            }
+            .info-label {
+                color: #8a6d5b;
+                font-size: 13px;
+                display: block;
+                margin-bottom: 4px;
+            }
+            .info-value {
+                font-weight: 500;
+                color: #2d1810;
+                font-size: 15px;
+            }
+            .info-value.amount {
+                color: #c0392b;
+                font-weight: 700;
+                font-size: 18px;
+            }
+            .info-value.status {
+                font-weight: 600;
+            }
+            .info-value.status-pending {
+                color: #e67e22;
+            }
+            .info-value.status-shipped {
+                color: #27ae60;
+            }
+            .info-value.status-completed {
+                color: #2980b9;
+            }
+            .info-value.status-cancelled {
+                color: #c0392b;
+            }
+            .shipping-info {
+                line-height: 1.8;
+            }
+            .shipping-info .info-item {
+                padding: 4px 0;
+            }
+            .back-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                color: #8a6d5b;
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 500;
+                padding: 9px 22px;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.9);
+                border: 1px solid rgba(0, 0, 0, 0.08);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                font-family: inherit;
+                cursor: pointer;
+            }
+            .back-link:hover {
+                color: #C9A96E;
+                border-color: #C9A96E;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(201, 169, 110, 0.15);
+            }
+            .order-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+            .order-table th,
+            .order-table td {
+                padding: 14px 18px;
+                text-align: left;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            }
+            .order-table th {
+                background: linear-gradient(135deg, #faf6f2 0%, #f5eee8 100%);
+                font-weight: 600;
+                color: #5a3a28;
+                font-size: 13px;
+                letter-spacing: 0.5px;
+            }
+            .order-table th:first-child {
+                border-radius: 10px 0 0 0;
+            }
+            .order-table th:last-child {
+                border-radius: 0 10px 0 0;
+            }
+            .order-table tr:hover {
+                background: rgba(201, 169, 110, 0.06);
+            }
+            .order-table td {
+                color: #2d1810;
+            }
+            .order-table td.text-right {
+                text-align: right;
+            }
+            .order-table td.amount {
+                color: #c0392b;
+                font-weight: 600;
+            }
+            .order-table td.total-label {
+                text-align: right;
+                font-weight: 600;
+                color: #5a3a28;
+            }
+            .order-table td.total-value {
+                text-align: right;
+                font-weight: 700;
+                color: #c0392b;
+                font-size: 18px;
+            }
+            .product-image {
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
+            .product-image-placeholder {
+                width: 60px;
+                height: 60px;
+                background: #f5eee8;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #b8a99a;
+                font-size: 12px;
+            }
+            .action-bar {
+                margin-top: 20px;
+                display: flex;
+                justify-content: flex-end;
+                gap: 12px;
+            }
+            .total-row td {
+                border-bottom: none;
+                padding-top: 18px;
+            }
+        </style>
+
+        <div style="margin-bottom: 20px;">
+            <a th:href="@{/admin/orderList}" class="back-link">← 返回订单列表</a>
+        </div>
+
+        <!-- 订单信息 -->
+        <div class="detail-section">
+            <div class="section-title">📋 订单信息</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">订单号</span>
+                    <span class="info-value">#[[${order.id}]]</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">下单时间</span>
+                    <span class="info-value">[[${order.datetime}]]</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">订单状态</span>
+                    <span class="info-value"
+                          th:classappend="${order.status == 2 ? 'status-pending' : (order.status == 3 ? 'status-shipped' : (order.status == 4 ? 'status-completed' : 'status-cancelled'))}"
+                          th:text="${statusText}">待处理</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">订单金额</span>
+                    <span class="info-value amount">¥[[${order.total}]]</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 收货信息 -->
+        <div class="detail-section">
+            <div class="section-title">📦 收货信息</div>
+            <div class="shipping-info">
+                <div class="info-item">
+                    <span class="info-label">收货人</span>
+                    <span class="info-value">[[${order.name}]]</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">联系电话</span>
+                    <span class="info-value">[[${order.phone}]]</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">收货地址</span>
+                    <span class="info-value">[[${order.address}]]</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商品清单 -->
+        <div class="detail-section">
+            <div class="section-title">🛒 商品清单</div>
+            
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">商品图片</th>
+                        <th>商品名称</th>
+                        <th class="text-right" style="width: 100px;">单价</th>
+                        <th class="text-right" style="width: 80px;">数量</th>
+                        <th class="text-right" style="width: 100px;">小计</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${orderItems}">
+                        <td>
+                            <img th:if="${item.goodsCover}" th:src="@{${item.goodsCover}}" alt="商品图片" class="product-image">
+                            <div th:else class="product-image-placeholder">无图</div>
+                        </td>
+                        <td>[[${item.goodsName}]]</td>
+                        <td class="text-right amount">¥[[${item.goodsPrice}]]</td>
+                        <td class="text-right">[[${item.amount}]]</td>
+                        <td class="text-right amount">¥[[${item.totalPrice}]]</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="4" class="total-label">合计：</td>
+                        <td class="total-value">¥[[${order.total}]]</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="action-bar">
+                <a th:if="${order.status == 2}" th:href="@{/admin/shipOrder(id=${order.id})}" class="btn btn-success" onclick="return confirm('确定要发货吗？')">确认发货</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

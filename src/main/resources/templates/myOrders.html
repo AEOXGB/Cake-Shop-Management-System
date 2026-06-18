@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的订单 - 蛋糕系统</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/main.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/zui.min.css}">
+    <script type="text/javascript" th:src="@{/js/jquery-3.0.0.js}"></script>
+    <script type="text/javascript" th:src="@{/js/zui.min.js}"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f8f4f0 0%, #f0ebe5 100%);
+            min-height: 100vh;
+        }
+
+        .order-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .order-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(201, 169, 110, 0.15);
+        }
+
+        .order-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #2d1810;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        /* 搜索栏 */
+        .search-bar {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 1px solid rgba(201, 169, 110, 0.2);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.8);
+            color: #5a3a28;
+        }
+
+        .search-bar input::placeholder {
+            color: #b8a090;
+        }
+
+        .search-bar input:focus {
+            border-color: #C9A96E;
+            box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+            outline: none;
+            background: #fff;
+        }
+
+        .search-bar button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar .btn-search {
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(201, 169, 110, 0.3);
+        }
+
+        .search-bar .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201, 169, 110, 0.4);
+        }
+
+        .search-bar .btn-reset {
+            background: rgba(245, 230, 211, 0.4);
+            color: #8a6d5b;
+            border: 1px solid rgba(201, 169, 110, 0.15);
+        }
+
+        .search-bar .btn-reset:hover {
+            background: rgba(245, 230, 211, 0.6);
+        }
+
+        /* 订单卡片 */
+        .order-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(45, 24, 16, 0.08);
+            margin-bottom: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 12px 40px rgba(45, 24, 16, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .order-info {
+            padding: 20px 24px;
+            background: rgba(245, 230, 211, 0.2);
+            border-bottom: 1px solid rgba(201, 169, 110, 0.1);
+        }
+
+        .order-info .order-id {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d1810;
+        }
+
+        .order-info .order-date {
+            margin-left: 24px;
+            color: #8a6d5b;
+            font-size: 14px;
+        }
+
+        .order-info .order-status {
+            margin-left: 24px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .order-status.paid {
+            background: rgba(201, 169, 110, 0.2);
+            color: #A68B5C;
+        }
+
+        .order-status.shipped {
+            background: rgba(230, 180, 80, 0.15);
+            color: #b8860b;
+        }
+
+        .order-status.completed {
+            background: rgba(166, 139, 92, 0.15);
+            color: #6d8c4a;
+        }
+
+        .order-status.cancelled {
+            background: rgba(192, 57, 43, 0.1);
+            color: #c0392b;
+        }
+
+        .order-status.pickup {
+            background: rgba(52, 152, 219, 0.15);
+            color: #2980b9;
+        }
+
+        .order-status.delivering {
+            background: rgba(155, 89, 182, 0.15);
+            color: #8e44ad;
+        }
+
+        .order-info .order-action {
+            margin-left: 20px;
+            padding: 7px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .order-info .order-action.cancel {
+            background: rgba(192, 57, 43, 0.1);
+            color: #c0392b;
+            border: 1px solid rgba(192, 57, 43, 0.2);
+        }
+
+        .order-info .order-action.cancel:hover {
+            background: #c0392b;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .receiver-info {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(201, 169, 110, 0.1);
+        }
+
+        .receiver-info p {
+            margin: 4px 0;
+            font-size: 13px;
+            color: #8a6d5b;
+        }
+
+        .receiver-info p strong {
+            color: #5a3a28;
+            font-weight: 600;
+        }
+
+        .order-items {
+            padding: 20px 24px;
+        }
+
+        .order-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(201, 169, 110, 0.06);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 90px;
+            height: 90px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .order-item:hover .item-image img {
+            transform: scale(1.05);
+        }
+
+        .item-info {
+            flex: 1;
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d1810;
+            margin-bottom: 8px;
+        }
+
+        .item-price {
+            font-size: 15px;
+            color: #A68B5C;
+            font-weight: 600;
+        }
+
+        .item-qty {
+            font-size: 14px;
+            color: #8a6d5b;
+            margin-left: 10px;
+        }
+
+        .order-summary {
+            display: flex;
+            justify-content: flex-end;
+            padding: 16px 24px;
+            background: rgba(245, 230, 211, 0.15);
+            border-top: 1px solid rgba(201, 169, 110, 0.08);
+        }
+
+        .summary-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: #A68B5C;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* 空状态 */
+        .empty-orders {
+            text-align: center;
+            padding: 80px 40px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(45, 24, 16, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-orders .empty-icon {
+            font-size: 80px;
+            color: rgba(201, 169, 110, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .empty-orders h3 {
+            font-size: 22px;
+            color: #8a6d5b;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .empty-orders a {
+            display: inline-block;
+            padding: 14px 44px;
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Noto Sans SC', sans-serif;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px rgba(201, 169, 110, 0.3);
+        }
+
+        .empty-orders a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(201, 169, 110, 0.4);
+        }
+
+        /* 分页 */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 24px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            margin-top: 30px;
+            box-shadow: 0 4px 20px rgba(45, 24, 16, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .pagination-container .page-info {
+            color: #8a6d5b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pagination-container .page-info span {
+            color: #A68B5C;
+            font-weight: 700;
+        }
+
+        .pagination-container a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            text-decoration: none;
+            color: #8a6d5b;
+            font-size: 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            background: rgba(245, 230, 211, 0.3);
+        }
+
+        .pagination-container a:hover {
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .pagination-container .disabled-pagination {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .pagination-container .current-page {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            border-radius: 50%;
+            padding: 0 4px;
+            box-shadow: 0 2px 10px rgba(201, 169, 110, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .search-bar button {
+                width: 100%;
+            }
+
+            .order-info .order-date {
+                display: block;
+                margin-left: 0;
+                margin-top: 6px;
+            }
+
+            .order-info .order-status {
+                margin-left: 0;
+                margin-top: 6px;
+            }
+
+            .order-info .order-action {
+                margin-left: 0;
+                margin-top: 8px;
+            }
+
+            .order-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .item-info {
+                padding-left: 0;
+                padding-top: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div th:if="${not #strings.isEmpty(msg)}">
+        <script>
+            $(function() {
+                new $.zui.Messager('[[${msg}]]', {
+                    icon: 'bell-alt',
+                    type: 'warning',
+                    placement: 'center'
+                }).show();
+            });
+        </script>
+    </div>
+
+    <div th:replace="admin/commons::topbar"></div>
+
+    <div class="order-container">
+        <div class="order-header">
+            <h2>我的订单</h2>
+            <div class="search-bar">
+                <input type="text" id="searchInput" name="keyword" placeholder="请输入订单号或收货人" 
+                       th:value="${keyword}">
+                <button id="searchBtn" class="btn-search">搜索</button>
+                <button id="resetBtn" class="btn-reset">重置</button>
+            </div>
+        </div>
+
+        <div th:if="${orders != null && !orders.isEmpty()}">
+            <div th:each="order : ${orders}" class="order-card">
+                <div class="order-info">
+                    <span class="order-id">订单号：<span th:text="${order.id}"></span></span>
+                    <span class="order-date">下单时间：<span th:text="${order.datetime}"></span></span>
+                    <span th:class="'order-status ' + ${order.status == 2 ? 'paid' : (order.status == 3 ? 'shipped' : (order.status == 5 ? 'cancelled' : (order.status == 6 ? 'pickup' : (order.status == 7 ? 'delivering' : 'completed'))))}">
+                        <span th:text="${order.status == 2 ? '已付款' : (order.status == 3 ? '待配送' : (order.status == 5 ? '已取消' : (order.status == 6 ? '待取货' : (order.status == 7 ? '配送中' : '已完成'))))}"></span>
+                    </span>
+                    <a th:href="@{/order/orderDetail(orderId=${order.id})}" class="order-action cancel" style="background: rgba(201, 169, 110, 0.1); color: #A68B5C; border-color: rgba(201, 169, 110, 0.2);">查看详情</a>
+                    <a th:if="${order.status == 2 || order.status == 3}" th:href="@{/order/cancelOrder(orderId=${order.id})}" 
+                       class="order-action cancel">取消订单</a>
+                    <div class="receiver-info">
+                        <p><strong>收货人：</strong><span th:text="${order.name}"></span></p>
+                        <p><strong>收货电话：</strong><span th:text="${order.phone}"></span></p>
+                        <p><strong>收货地址：</strong><span th:text="${order.address}"></span></p>
+                    </div>
+                </div>
+                
+                <div class="order-items">
+                    <div th:each="item : ${order.items}" class="order-item">
+                        <div class="item-image">
+                            <img th:src="@{${item.goodsCover}}" alt="商品图片">
+                        </div>
+                        <div class="item-info">
+                            <span class="item-name" th:text="${item.goodsName}"></span>
+                            <span class="item-price">¥<span th:text="${item.price}"></span></span>
+                            <span class="item-qty">x<span th:text="${item.amount}"></span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-summary">
+                    <span class="summary-total">订单总额：¥<span th:text="${order.total > 0 ? order.total : #aggregates.sum(order.items.![price * amount])}"></span></span>
+                </div>
+            </div>
+            
+            <!-- 分页导航 -->
+            <div th:if="${totalPages > 1}" class="pagination-container">
+                <span class="page-info">共 <span>[[${totalItems}]]</span> 条记录</span>
+                
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <a th:href="@{/order/myOrders(page=${currentPage - 1}, keyword=${keyword})}" 
+                       th:classappend="${currentPage == 1 ? 'disabled-pagination' : ''}">
+                        <</a>
+                    
+                    <span class="current-page">[[${currentPage}]]</span>
+                    
+                    <a th:href="@{/order/myOrders(page=${currentPage + 1}, keyword=${keyword})}" 
+                       th:classappend="${currentPage == totalPages ? 'disabled-pagination' : ''}">
+                        ></a>
+                </div>
+                
+                <span class="page-info">共 <span>[[${totalPages}]]</span> 页</span>
+            </div>
+        </div>
+
+        <div th:if="${orders == null || orders.isEmpty()}" class="empty-orders">
+            <i class="icon icon-file-text empty-icon"></i>
+            <h3>暂无订单</h3>
+            <a th:href="@{/goods/goodsList}">去购物</a>
+        </div>
+    </div>
+
+    <div th:replace="admin/commons::footbar"></div>
+
+<script>
+$(function() {
+    $('#searchBtn').click(function() {
+        var keyword = $('#searchInput').val();
+        location.href = "[[@{/order/myOrders}]]?keyword=" + encodeURIComponent(keyword);
+    });
+    
+    $('#resetBtn').click(function() {
+        $('#searchInput').val('');
+        location.href = "[[@{/order/myOrders}]]";
+    });
+    
+    $('#searchInput').keypress(function(e) {
+        if (e.which == 13) {
+            $('#searchBtn').click();
+        }
+    });
+});
+</script>
+</body>
+</html>

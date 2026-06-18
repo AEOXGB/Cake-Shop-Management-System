@@ -1,0 +1,98 @@
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息通知</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <style>
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        header a { color: white; text-decoration: none; }
+        .container { padding: 20px; }
+        .filter-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .filter-tabs button { padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; background: white; color: #666; }
+        .filter-tabs button.active { background: #667eea; color: white; }
+        .notification-list { max-width: 600px; margin: 0 auto; }
+        .notification-item { background: white; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; gap: 15px; }
+        .notification-item.unread { border-left: 4px solid #667eea; }
+        .notification-item.read { border-left: 4px solid #eee; opacity: 0.7; }
+        .icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .icon.order { background: #fff3e0; color: #ff9800; }
+        .icon.system { background: #e3f2fd; color: #2196f3; }
+        .icon.income { background: #e8f5e9; color: #4caf50; }
+        .content { flex: 1; }
+        .content h4 { margin: 0 0 5px 0; color: #333; }
+        .content p { margin: 0 0 5px 0; color: #666; font-size: 14px; }
+        .content .time { color: #999; font-size: 12px; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+        .empty-state i { font-size: 48px; margin-bottom: 15px; opacity: 0.3; }
+        
+        /* ===== 夜间模式样式 ===== */
+        body.dark-mode { background: #1a1a2e; }
+        body.dark-mode .notification-card { background: #16213e; border-color: #2d3436; }
+        body.dark-mode .notification-card.unread { background: #1e3a5f; }
+        body.dark-mode .content h3 { color: #e0d5c8; }
+        body.dark-mode .content p { color: #b3b3b3; }
+        body.dark-mode .content .time { color: #666; }
+        body.dark-mode .empty-state { color: #666; }
+        body.dark-mode footer { background: #16213e; }
+        body.dark-mode .footer-item { color: #666; }
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/rider/index">← 返回</a>
+        <h1>消息通知</h1>
+        <span th:if="${unreadCount > 0}" style="background: #f44336; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px;" th:text="${unreadCount} + '条未读'"></span>
+        <span th:else></span>
+    </header>
+
+    <div class="container">
+        <div class="filter-tabs">
+            <button th:class="${type == 'all' ? 'active' : ''}" onclick="location.href='/rider/notifications?type=all'">全部</button>
+            <button th:class="${type == 'order' ? 'active' : ''}" onclick="location.href='/rider/notifications?type=order'">订单</button>
+            <button th:class="${type == 'system' ? 'active' : ''}" onclick="location.href='/rider/notifications?type=system'">系统</button>
+            <button th:class="${type == 'income' ? 'active' : ''}" onclick="location.href='/rider/notifications?type=income'">收入</button>
+        </div>
+
+        <div class="notification-list" th:if="${notifications != null && !notifications.isEmpty()}">
+            <div th:each="item : ${notifications}" th:class="|notification-item ${item.isRead == 0 ? 'unread' : 'read'}|">
+                <div th:class="|icon ${item.type}|">
+                    <span th:if="${item.type == 'order'}">📦</span>
+                    <span th:if="${item.type == 'system'}">⚙️</span>
+                    <span th:if="${item.type == 'income'}">💰</span>
+                </div>
+                <div class="content">
+                    <h4 th:text="${item.title}"></h4>
+                    <p th:text="${item.content}"></p>
+                    <span class="time" th:text="${item.time}"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-state" th:if="${notifications == null || notifications.isEmpty()}">
+            <i>📭</i>
+            <p>暂无消息通知</p>
+        </div>
+    </div>
+
+    <script>
+        // ===== 夜间模式和字体大小初始化 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // 夜间模式初始化
+            var nightMode = localStorage.getItem('nightMode');
+            if (nightMode === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // 字体大小初始化
+            var fontSize = localStorage.getItem('fontSize');
+            if (fontSize) {
+                document.documentElement.style.fontSize = fontSize + 'px';
+            }
+        });
+    </script>
+</body>
+</html>

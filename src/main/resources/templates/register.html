@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>蛋糕系统 - 注册</title>
+    <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/main.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/zui.min.css}">
+    <script type="text/javascript" th:src="@{/js/jquery-3.0.0.js}"></script>
+    <script type="text/javascript" th:src="@{/js/zui.min.js}"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f8f4f0 0%, #f0ebe5 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar-cake {
+            background: linear-gradient(135deg, #2d1810 0%, #4a2a1a 100%) !important;
+            border: none !important;
+            box-shadow: 0 4px 25px rgba(45, 24, 16, 0.3);
+            padding: 8px 0;
+        }
+        .navbar-cake .navbar-brand {
+            color: #C9A96E !important;
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .navbar-cake .navbar-nav > li > a {
+            color: rgba(245, 230, 211, 0.8) !important;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .navbar-cake .navbar-nav > li > a:hover,
+        .navbar-cake .navbar-nav > li.active > a {
+            color: #C9A96E !important;
+        }
+        
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(45, 24, 16, 0.15);
+            width: 100%;
+            max-width: 460px;
+            padding: 50px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .register-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #C9A96E, #A68B5C, #C9A96E);
+        }
+        
+        .register-logo { text-align: center; margin-bottom: 32px; }
+        .register-logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2d1810, #4a2a1a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .register-logo p { color: #8a6d5b; font-size: 14px; margin-top: 6px; }
+        
+        .input-group { margin-bottom: 18px; width: 100%; }
+        .input-group-addon {
+            width: 50px;
+            background: #faf6f2;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-right: none;
+            text-align: center;
+            color: #C9A96E;
+            border-radius: 12px 0 0 12px;
+        }
+        .form-control {
+            height: 50px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-left: none;
+            font-size: 15px;
+            padding: 10px 15px;
+            border-radius: 0 12px 12px 0;
+            font-family: inherit;
+        }
+        .form-control:focus { border-color: #C9A96E; box-shadow: none; }
+        
+        .login-link { text-align: right; margin-bottom: 22px; }
+        .login-link a { color: #C9A96E; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .login-link a:hover { color: #A68B5C; }
+        
+        .btn-register {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, #C9A96E, #A68B5C);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 20px rgba(201, 169, 110, 0.3);
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201, 169, 110, 0.4);
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #1a1410, #2d1810);
+            padding: 30px 40px;
+            text-align: center;
+            color: rgba(245, 230, 211, 0.6);
+            border-top: 1px solid rgba(201, 169, 110, 0.1);
+        }
+        .footer-links a {
+            color: rgba(245, 230, 211, 0.5);
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover { color: #C9A96E; }
+        .footer-info { font-size: 12px; line-height: 1.8; }
+        .footer-info p { margin: 3px 0; }
+        
+        @media (max-width: 480px) {
+            .register-card { padding: 30px 20px; }
+            .form-control { height: 44px; }
+            .btn-register { height: 44px; font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-cake">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-example">
+                    <span class="sr-only">切换导航</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" th:href="@{/login.html}">🍰 蛋糕系统</a>
+            </div>
+            <div class="collapse navbar-collapse navbar-collapse-example">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a th:href="@{/register.html}">注册</a></li>
+                    <li><a th:href="@{/login.html}">登录</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right" style="padding-right:60px;">
+                    <li><a href="#"><i class="icon icon-shopping-cart icon-2x"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="main-wrapper">
+        <div class="register-card">
+            <div class="register-logo">
+                <h1>🎂 加入我们</h1>
+                <p>创建您的账户，开启蛋糕之旅</p>
+            </div>
+            
+            <form th:action="@{/user/register}" method="post">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="icon icon-user"></i></span>
+                    <input type="text" class="form-control" placeholder="请输入用户名" id="username" name="username" required>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="icon icon-lock"></i></span>
+                    <input type="password" class="form-control" placeholder="请输入密码" id="passwd" name="passwd" required>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="icon icon-envelope"></i></span>
+                    <input type="email" class="form-control" placeholder="请输入邮箱" id="email" name="email" required>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="icon icon-user"></i></span>
+                    <input type="text" class="form-control" placeholder="请输入收货人姓名" id="receiveName" name="receiveName" required>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="icon icon-phone"></i></span>
+                    <input type="text" class="form-control" placeholder="请输入手机号" id="receivePhone" name="receivePhone" required>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="icon icon-map-marker"></i></span>
+                    <input type="text" class="form-control" placeholder="请输入收货地址" id="receiveAddress" name="receiveAddress" required>
+                </div>
+                
+                <div class="input-group" style="border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 0 15px; height: 50px; display: flex; align-items: center;">
+                    <span class="input-group-addon" style="border: none; background: transparent;">
+                        <i class="icon icon-user"></i>
+                    </span>
+                    <div style="flex: 1; display: flex; gap: 20px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="userType" value="user" checked style="margin-right: 8px;">
+                            <span style="color: #5a3a28; font-size: 14px;">普通用户</span>
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="userType" value="rider" style="margin-right: 8px;">
+                            <span style="color: #5a3a28; font-size: 14px;">骑手</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="login-link">
+                    <a th:href="@{/login.html}">已有账号？去登录 →</a>
+                </div>
+                
+                <button class="btn-register" type="submit">注 册</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <div class="footer-links">
+            <a href="#">百度外卖</a> <a href="#">美团外卖</a> <a href="#">饿了么</a>
+            <a href="#">百度</a> <a href="#">谷歌</a> <a href="#">新浪</a>
+            <a href="#">网易</a> <a href="#">搜狐</a>
+        </div>
+        <div class="footer-info">
+            <p>24小时客户服务热线：010-68988888 | <a href="#">常见问题解答</a> | 投诉热线：010-627488888</p>
+            <p>Copyright &copy; 1999-2026 News China gov, All Right Reserver</p>
+            <p>网龙网络有限公司 版权所有</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <div th:fragment="content">
+        <style>
+            .user-status {
+                display: inline-block;
+                padding: 4px 14px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 500;
+            }
+            .user-status.pending {
+                background: rgba(230, 126, 34, 0.15);
+                color: #e67e22;
+            }
+            .user-status.frozen {
+                background: rgba(231, 76, 60, 0.15);
+                color: #c0392b;
+            }
+            .user-status.admin {
+                background: rgba(231, 76, 60, 0.15);
+                color: #c0392b;
+            }
+            .user-status.normal {
+                background: rgba(52, 152, 219, 0.15);
+                color: #2980b9;
+            }
+            .action-link {
+                display: inline-block;
+                padding: 6px 14px;
+                border-radius: 6px;
+                text-decoration: none;
+                font-size: 12px;
+                font-weight: 500;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                cursor: pointer;
+                margin-right: 4px;
+            }
+            .action-link:hover {
+                transform: translateY(-1px);
+            }
+            .action-link.approve {
+                background: linear-gradient(135deg, #27ae60, #2ecc71);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+            }
+            .action-link.approve:hover {
+                box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+            }
+            .action-link.edit {
+                background: linear-gradient(135deg, #C9A96E, #A68B5C);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(201, 169, 110, 0.25);
+            }
+            .action-link.edit:hover {
+                box-shadow: 0 6px 20px rgba(201, 169, 110, 0.35);
+            }
+            .action-link.freeze {
+                background: linear-gradient(135deg, #e67e22, #f39c12);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(230, 126, 34, 0.2);
+            }
+            .action-link.freeze:hover {
+                box-shadow: 0 6px 20px rgba(230, 126, 34, 0.3);
+            }
+            .action-link.unfreeze {
+                background: linear-gradient(135deg, #1abc9c, #16a085);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);
+            }
+            .action-link.unfreeze:hover {
+                box-shadow: 0 6px 20px rgba(26, 188, 156, 0.3);
+            }
+            .action-link.perm {
+                background: linear-gradient(135deg, #9b59b6, #8e44ad);
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(155, 89, 182, 0.2);
+            }
+            .action-link.perm:hover {
+                box-shadow: 0 6px 20px rgba(155, 89, 182, 0.3);
+            }
+            .action-group {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                justify-content: center;
+            }
+        </style>
+
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">未审核用户</h2>
+            </div>
+            <span style="color: #8a6d5b; font-size: 14px;">共 <span style="color: #C9A96E; font-weight: 700;">[[${totalItems}]]</span> 条记录</span>
+        </div>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>用户名</th>
+                    <th>邮箱</th>
+                    <th>姓名</th>
+                    <th>电话</th>
+                    <th>地址</th>
+                    <th style="text-align:center;">状态</th>
+                    <th style="text-align:center;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${userList}">
+                    <td style="font-weight:500; color:#2d1810;">[[${user.username}]]</td>
+                    <td style="color:#666;">[[${user.email}]]</td>
+                    <td style="color:#666;">[[${user.name}]]</td>
+                    <td style="color:#666;">[[${user.phone}]]</td>
+                    <td style="color:#888; font-size:13px;">[[${user.address}]]</td>
+                    <td style="text-align:center;">
+                        <span th:text="${user.isvalidate == '0' ? '待审核' : '已冻结'}" 
+                              th:class="'user-status ' + (${user.isvalidate == '0'} ? 'pending' : 'frozen')"></span>
+                    </td>
+                    <td style="text-align:center;">
+                        <div class="action-group">
+                            <a th:if="${user.isvalidate == '0'}" th:href="@{/admin/validateUser(userId=${user.id})}" 
+                               onclick="return confirm('确定要审核此用户吗？')" class="action-link approve">审核</a>
+                            <a th:href="@{/admin/editUser(userId=${user.id})}" class="action-link edit">修改</a>
+                            <a th:if="${user.isvalidate == '0'}" th:href="@{/admin/freezeUser(userId=${user.id})}" 
+                               onclick="return confirm('确定要冻结此用户吗？冻结后用户将无法登录。')" class="action-link freeze">冻结</a>
+                            <a th:if="${user.isvalidate == '2'}" th:href="@{/admin/unfreezeUser(userId=${user.id})}" 
+                               onclick="return confirm('确定要解冻此用户吗？解冻后用户可以重新登录。')" class="action-link unfreeze">解冻</a>
+                            <a th:href="@{/admin/setAdminPage(userId=${user.id})}" class="action-link perm">权限管理</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${userList == null || userList.isEmpty()}">
+                    <td colspan="7" style="padding: 50px; text-align: center; color: #b8a99a;">暂无用户</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="pagination-container" style="margin-top: 28px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+            <span style="color: #8a6d5b; margin-right: 10px;">共 <strong>[[${totalItems}]]</strong> 条</span>
+            
+            <a th:if="${currentPage > 1}" 
+               th:href="@{/admin/userList(page=${currentPage - 1})}" 
+               style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: #fff;">上一页</a>
+            
+            <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+               th:href="@{/admin/userList(page=${i})}"
+               th:style="${i == currentPage ? 'padding: 8px 16px; border-radius: 4px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none;' : 'padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: #fff;'"
+               th:text="${i}">1</a>
+            
+            <a th:if="${currentPage < totalPages}" 
+               th:href="@{/admin/userList(page=${currentPage + 1})}" 
+               style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333; background: #fff;">下一页</a>
+            
+            <span style="color: #8a6d5b; margin-left: 10px;">共 <strong>[[${totalPages}]]</strong> 页</span>
+        </div>
+    </div>
+</body>
+</html>
