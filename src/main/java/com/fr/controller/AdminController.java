@@ -872,6 +872,7 @@ public class AdminController {
             return modelAndView;
         }
         
+        String keyword = request.getParameter("keyword");
         String pageStr = request.getParameter("page");
         int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
         int pageSize = 5;
@@ -881,6 +882,23 @@ public class AdminController {
         userQuery.orderByDesc("id");
         
         List<User> userList = userMapper.selectList(userQuery);
+        
+        // 搜索过滤
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String searchKeyword = keyword.trim();
+            List<User> filteredList = new ArrayList<>();
+            for (User u : userList) {
+                boolean match = false;
+                if (u.getUsername() != null && u.getUsername().contains(searchKeyword)) match = true;
+                if (u.getName() != null && u.getName().contains(searchKeyword)) match = true;
+                if (u.getPhone() != null && u.getPhone().contains(searchKeyword)) match = true;
+                if (u.getEmail() != null && u.getEmail().contains(searchKeyword)) match = true;
+                if (match) {
+                    filteredList.add(u);
+                }
+            }
+            userList = filteredList;
+        }
         
         int totalItems = userList.size();
         int totalPages = (int) Math.ceil((double) totalItems / pageSize);
@@ -892,6 +910,7 @@ public class AdminController {
         modelAndView.addObject("totalItems", totalItems);
         modelAndView.addObject("totalPages", totalPages);
         modelAndView.addObject("currentPage", page);
+        modelAndView.addObject("keyword", keyword);
         modelAndView.addObject("active", 4);
         modelAndView.addObject("pageTitle", "未审核用户");
         modelAndView.addObject("content", "admin/adminUserList :: content");
@@ -1116,6 +1135,8 @@ public class AdminController {
             return modelAndView;
         }
         
+        String keyword = request.getParameter("keyword");
+        
         List<Rider> riderList = riderService.getAllRiders();
         
         List<Rider> pendingRiders = new ArrayList<>();
@@ -1125,12 +1146,28 @@ public class AdminController {
             }
         }
         
+        // 搜索过滤
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String searchKeyword = keyword.trim();
+            List<Rider> filteredList = new ArrayList<>();
+            for (Rider rider : pendingRiders) {
+                boolean match = false;
+                if (rider.getName() != null && rider.getName().contains(searchKeyword)) match = true;
+                if (rider.getPhone() != null && rider.getPhone().contains(searchKeyword)) match = true;
+                if (match) {
+                    filteredList.add(rider);
+                }
+            }
+            pendingRiders = filteredList;
+        }
+        
         int totalItems = pendingRiders.size();
         
         modelAndView.addObject("riderList", pendingRiders);
         modelAndView.addObject("totalItems", totalItems);
         modelAndView.addObject("totalPages", 1);
         modelAndView.addObject("currentPage", 1);
+        modelAndView.addObject("keyword", keyword);
         modelAndView.addObject("active", 6);
         modelAndView.addObject("pageTitle", "骑手审核");
         modelAndView.addObject("content", "admin/adminRiderList :: content");
@@ -1200,6 +1237,7 @@ public class AdminController {
             return modelAndView;
         }
         
+        String keyword = request.getParameter("keyword");
         String pageStr = request.getParameter("page");
         int page = pageStr != null ? Integer.parseInt(pageStr) : 1;
         int pageSize = 5;
@@ -1229,6 +1267,22 @@ public class AdminController {
             }
         }
         
+        // 搜索过滤
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            String searchKeyword = keyword.trim();
+            List<User> filteredList = new ArrayList<>();
+            for (User u : validUsers) {
+                boolean match = false;
+                if (u.getUsername() != null && u.getUsername().contains(searchKeyword)) match = true;
+                if (u.getName() != null && u.getName().contains(searchKeyword)) match = true;
+                if (u.getPhone() != null && u.getPhone().contains(searchKeyword)) match = true;
+                if (match) {
+                    filteredList.add(u);
+                }
+            }
+            validUsers = filteredList;
+        }
+        
         validUsers.sort((a, b) -> Integer.compare(b.getId(), a.getId()));
         
         int totalItems = validUsers.size();
@@ -1241,6 +1295,7 @@ public class AdminController {
         modelAndView.addObject("totalItems", totalItems);
         modelAndView.addObject("totalPages", totalPages);
         modelAndView.addObject("currentPage", page);
+        modelAndView.addObject("keyword", keyword);
         modelAndView.addObject("active", 5);
         modelAndView.addObject("pageTitle", "用户列表");
         modelAndView.addObject("content", "admin/adminUserStats :: content");

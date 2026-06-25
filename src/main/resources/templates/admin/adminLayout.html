@@ -217,12 +217,12 @@
         .ai-customer-service {
             position: fixed;
             bottom: 30px;
-            left: 50px;
+            left: 280px;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            z-index: 200;
+            z-index: 1001;
         }
         
         .ai-avatar {
@@ -280,7 +280,7 @@
         /* AI对话框样式 */
         .ai-chat-dialog {
             position: fixed;
-            right: 30px;
+            left: 280px;
             bottom: 30px;
             width: 360px;
             background: #fff;
@@ -1400,7 +1400,7 @@
                     </ul>
                 </li>
                 
-                <li class="has-submenu" th:classappend="${active >= 2 && active <= 3 ? 'open active' : ''}">
+                <li class="has-submenu" th:classappend="${active == 2 ? 'open active' : ''}">
                     <a th:href="@{/admin/orderList}">
                         <i class="icon icon-file-text icon"></i>
                         <span>订单管理</span>
@@ -1408,9 +1408,6 @@
                     <ul class="submenu">
                         <li th:classappend="${active == 2 ? 'active' : ''}">
                             <a th:href="@{/admin/orderList}">订单列表</a>
-                        </li>
-                        <li th:classappend="${active == 3 ? 'active' : ''}">
-                            <a th:href="@{/admin/orderStats}">销售统计</a>
                         </li>
                     </ul>
                 </li>
@@ -1458,7 +1455,7 @@
                 </li>
             </ul>
             
-            <!-- AI客服卡通人物 -->
+            <!-- AI客服卡通人物（侧边栏底部） -->
             <div class="ai-customer-service">
                 <div class="ai-avatar" onclick="toggleChatDialog()">
                     <div class="avatar-face">

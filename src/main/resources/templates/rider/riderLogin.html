@@ -1,104 +1,298 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>骑手登录</title>
+    <title>骑手登录 - CakeShop</title>
     <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/zui.min.css}">
+    <script type="text/javascript" th:src="@{/js/jquery-3.0.0.js}"></script>
+    <script type="text/javascript" th:src="@{/js/zui.min.js}"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Noto Sans SC', 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 40%, #24243e 100%);
+            position: relative;
+            overflow: hidden;
         }
+        
+        /* ===== 动感背景 ===== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(118, 75, 162, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(102, 126, 234, 0.05) 0%, transparent 50%);
+            animation: bgShift 25s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+        
+        @keyframes bgShift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-3%, -3%) rotate(2deg); }
+        }
+        
+        /* ===== 四边形装饰 ===== */
+        .geo-shape {
+            position: fixed;
+            border: 2px solid rgba(102, 126, 234, 0.08);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .geo-shape:nth-child(1) {
+            top: 10%; right: 8%;
+            width: 120px; height: 120px;
+            border-radius: 30px;
+            transform: rotate(25deg);
+            animation: floatShape 12s ease-in-out infinite;
+        }
+        .geo-shape:nth-child(2) {
+            bottom: 15%; left: 5%;
+            width: 80px; height: 80px;
+            border-radius: 20px;
+            transform: rotate(-15deg);
+            animation: floatShape 10s ease-in-out infinite reverse;
+        }
+        .geo-shape:nth-child(3) {
+            top: 50%; left: 50%;
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            border-color: rgba(118, 75, 162, 0.05);
+            transform: translate(-50%, -50%);
+            animation: pulseCircle 8s ease-in-out infinite;
+        }
+        
+        @keyframes floatShape {
+            0%, 100% { transform: rotate(25deg) translateY(0); }
+            50% { transform: rotate(35deg) translateY(-20px); }
+        }
+        @keyframes pulseCircle {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+        }
+        
+        /* ===== 登录容器 ===== */
         .login-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 28px;
+            box-shadow: 
+                0 30px 80px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            padding: 48px 40px 44px;
             width: 100%;
             max-width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            z-index: 1;
+            animation: containerIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        
+        @keyframes containerIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        /* 顶栏渐变 */
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 28px; right: 28px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            border-radius: 0 0 3px 3px;
+        }
+        
         .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
+        }
+        .logo .icon-delivery {
+            font-size: 52px;
+            display: block;
+            margin-bottom: 10px;
+            animation: deliveryMove 2s ease-in-out infinite;
+        }
+        @keyframes deliveryMove {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-5px) rotate(-5deg); }
+            75% { transform: translateX(5px) rotate(5deg); }
         }
         .logo h1 {
-            color: #667eea;
+            font-family: 'Inter', sans-serif;
             font-size: 28px;
-            margin-bottom: 5px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #a78bfa, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
         }
         .logo p {
-            color: #999;
+            color: rgba(255, 255, 255, 0.4);
             font-size: 14px;
+            margin-top: 6px;
+            letter-spacing: 4px;
+            font-weight: 300;
         }
+        
+        /* ===== 表单 ===== */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
             font-weight: 500;
+            letter-spacing: 1px;
         }
         .form-group input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
             font-size: 16px;
+            font-family: inherit;
+            color: #fff;
             transition: all 0.3s;
+            outline: none;
+        }
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
         }
         .form-group input:focus {
-            outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
         }
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
+        
+        /* 链接 */
+        .rider-user-link {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .rider-user-link a {
+            color: rgba(167, 139, 250, 0.6);
+            text-decoration: none;
+            font-size: 13px;
             transition: all 0.3s;
         }
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        .rider-user-link a:hover {
+            color: rgba(167, 139, 250, 0.9);
         }
+        .rider-user-link a::before {
+            content: '← ';
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.6s;
+        }
+        .btn-login:hover::before { left: 100%; }
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.35);
+        }
+        .btn-login:active { transform: translateY(0); }
+        
         .error-message {
-            background: #ffebee;
-            color: #c62828;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
+            background: rgba(198, 40, 40, 0.15);
+            border: 1px solid rgba(198, 40, 40, 0.3);
+            color: #ef9a9a;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-top: 18px;
             font-size: 14px;
+            text-align: center;
+        }
+        
+        /* ===== 底部 ===== */
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 12px;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container { padding: 35px 24px 30px; margin: 20px; }
+            .form-group input { padding: 12px 16px; }
+            .btn-login { padding: 14px; }
+            .logo h1 { font-size: 24px; }
+        }
+
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 40%, #16213e 100%);
+        }
+        body.dark-mode .login-container {
+            background: rgba(15, 15, 35, 0.85);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        body.dark-mode .form-group input {
+            background: rgba(30, 30, 60, 0.6);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        body.dark-mode .form-group input:focus {
+            border-color: #667eea;
+            background: rgba(30, 30, 60, 0.8);
+        }
+        body.dark-mode .geo-shape {
+            border-color: rgba(102, 126, 234, 0.05);
         }
     </style>
 </head>
 <body>
+    <!-- 几何装饰 -->
+    <div class="geo-shape"></div>
+    <div class="geo-shape"></div>
+    <div class="geo-shape"></div>
+    
     <div class="login-container">
         <div class="logo">
-            <h1>🍰 骑手端</h1>
-            <p>蛋糕系统配送平台</p>
+            <span class="icon-delivery">🛵</span>
+            <h1>Rider Hub</h1>
+            <p>蛋糕系统 · 配送平台</p>
         </div>
         
         <form action="/rider/doLogin" method="post">
             <div class="form-group">
                 <label for="phone">手机号</label>
-                <input type="tel" id="phone" name="phone" placeholder="请输入手机号" required>
+                <input type="tel" id="phone" name="phone" placeholder="请输入注册手机号" required>
             </div>
             
             <div class="form-group">
@@ -106,12 +300,34 @@
                 <input type="password" id="password" name="password" placeholder="请输入密码" required>
             </div>
             
-            <button type="submit" class="btn-login">登录</button>
+            <div class="rider-user-link">
+                <a th:href="@{/login.html}">返回用户登录</a>
+            </div>
+            
+            <button type="submit" class="btn-login">登 录</button>
         </form>
         
         <div th:if="${error}" class="error-message">
             [[${error}]]
         </div>
+        
+        <div class="login-footer">
+            CakeShop Delivery &copy; 2026
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var nightMode = localStorage.getItem('nightMode');
+            if (nightMode === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            var fontSize = localStorage.getItem('fontSize');
+            if (fontSize) {
+                document.documentElement.style.fontSize = fontSize + 'px';
+            }
+        });
+    </script>
 </body>
 </html>

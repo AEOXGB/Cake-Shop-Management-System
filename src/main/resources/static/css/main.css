@@ -31,3 +31,343 @@ li{ list-style:none;}
 #footer p{ font:14px/24px Arial; color:#999;}
 #footer p.copyright{ color:#333; margin-top:15px;}
 
+/* ===== AI客服样式 ===== */
+.ai-customer-service {
+    position: fixed !important;
+    bottom: 30px !important;
+    left: 80px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    cursor: pointer !important;
+    z-index: 9999 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    float: none !important;
+}
+
+.ai-avatar {
+    position: relative !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+    transition: all 0.3s ease !important;
+    animation: aiFloat 3s ease-in-out infinite !important;
+    border: none !important;
+}
+
+.ai-avatar:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
+}
+
+.avatar-face {
+    font-size: 28px !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.face-icon {
+    font-size: 28px !important;
+}
+
+.avatar-glow {
+    position: absolute !important;
+    top: -2px !important;
+    right: -2px !important;
+    width: 16px !important;
+    height: 16px !important;
+    background: #28a745 !important;
+    border-radius: 50% !important;
+    border: 2px solid #fff !important;
+    animation: aiPulse 2s ease-in-out infinite !important;
+}
+
+.ai-name {
+    margin-top: 8px !important;
+    font-size: 12px !important;
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    padding: 4px 12px !important;
+    border-radius: 10px !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+}
+
+@keyframes aiFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes aiPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+/* AI对话框样式 */
+.ai-chat-dialog {
+    position: fixed !important;
+    left: 280px !important;
+    bottom: 30px !important;
+    width: 360px !important;
+    background: #fff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    overflow: hidden !important;
+    z-index: 9998 !important;
+    display: none !important;
+    flex-direction: column !important;
+    max-height: 500px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+.ai-chat-dialog.show {
+    display: flex !important;
+}
+
+.chat-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    padding: 16px 20px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin: 0 !important;
+}
+
+.chat-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    margin: 0 !important;
+}
+
+.title-icon {
+    font-size: 18px !important;
+}
+
+.chat-close {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    color: #fff !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+.chat-close:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.chat-messages {
+    flex: 1 !important;
+    padding: 15px !important;
+    overflow-y: auto !important;
+    max-height: 350px !important;
+    background: #faf8f5 !important;
+    margin: 0 !important;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 4px !important;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1 !important;
+    border-radius: 2px !important;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #ddd !important;
+    border-radius: 2px !important;
+}
+
+.message {
+    display: flex !important;
+    gap: 10px !important;
+    margin-bottom: 15px !important;
+    animation: aiFadeIn 0.3s ease !important;
+    padding: 0 !important;
+}
+
+@keyframes aiFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message.user-message {
+    flex-direction: row-reverse !important;
+}
+
+.message-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    flex-shrink: 0 !important;
+    background: none !important;
+}
+
+.ai-message .message-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.user-message .message-avatar {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+}
+
+.message-content {
+    max-width: 75% !important;
+    padding: 10px 14px !important;
+    border-radius: 18px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+}
+
+.ai-message .message-content {
+    background: #fff !important;
+    border-radius: 0 18px 18px 18px !important;
+    color: #333 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.user-message .message-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #fff !important;
+    border-radius: 18px 0 18px 18px !important;
+}
+
+.message-content p {
+    margin: 0 0 5px 0 !important;
+    line-height: 1.5 !important;
+    font-size: 14px !important;
+}
+
+.message-content p:last-child {
+    margin-bottom: 0 !important;
+}
+
+.chat-input-area {
+    display: flex !important;
+    gap: 10px !important;
+    padding: 15px !important;
+    border-top: 1px solid #eee !important;
+    background: #fff !important;
+    margin: 0 !important;
+}
+
+.chat-input-area input {
+    flex: 1 !important;
+    padding: 12px 16px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 25px !important;
+    font-size: 14px !important;
+    outline: none !important;
+    transition: all 0.2s !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+}
+
+.chat-input-area input:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
+}
+
+.send-btn {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+.send-btn:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+}
+
+.chat-footer {
+    padding: 10px 15px !important;
+    background: #f8f4f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 12px !important;
+    color: #999 !important;
+    margin: 0 !important;
+}
+
+.powered-by {
+    color: #bbb !important;
+    font-size: 12px !important;
+}
+
+.volcengine {
+    color: #ff6b35 !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+}
+
+/* 遮罩层 */
+.chat-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    z-index: 9997 !important;
+    display: none !important;
+}
+
+.chat-overlay.show {
+    display: block !important;
+}
+
+/* 响应式适配 */
+@media (max-width: 480px) {
+    .ai-chat-dialog {
+        width: calc(100% - 30px) !important;
+        right: 15px !important;
+        left: 15px !important;
+        bottom: 180px !important;
+    }
+    
+    .ai-customer-service {
+        right: 20px !important;
+        bottom: 90px !important;
+    }
+}
+

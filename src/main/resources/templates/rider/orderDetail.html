@@ -5,57 +5,271 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>订单详情</title>
     <link rel="icon" type="image/jpeg" href="/picture/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
-        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .container { padding: 20px; }
-        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
-        .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
-        .label { color: #999; }
-        .value { color: #333; font-weight: 500; }
-        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; }
-        .btn-primary { background: #667eea; color: white; }
-        .btn-secondary { background: #e0e0e0; color: #333; }
-        
-        /* ===== 夜间模式样式 ===== */
-        body.dark-mode { background: #1a1a2e; }
-        body.dark-mode .detail-card { background: #16213e; }
-        body.dark-mode .detail-card .label { color: #b3b3b3; }
-        body.dark-mode .detail-card .value { color: #e0d5c8; }
-        body.dark-mode .goods-list { background: #16213e; }
-        body.dark-mode .goods-item { border-bottom-color: #2d3436; }
-        body.dark-mode .goods-item .name { color: #e0d5c8; }
-        body.dark-mode .commission-card { background: #16213e; }
-        body.dark-mode .commission-card .label { color: #b3b3b3; }
-        body.dark-mode .btn-secondary { background: #2d3436; color: #e0d5c8; }
+        /* ===== CSS 变量 ===== */
+        :root {
+            --primary-start: #667eea;
+            --primary-mid: #6c6ce0;
+            --primary-end: #764ba2;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-gradient-hover: linear-gradient(135deg, #5a6fd9 0%, #6a4193 100%);
+            --accent-pink: #e91e63;
+            --accent-green: #10b981;
+            --bg-page: #f0f2f8;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px rgba(102, 126, 234, 0.12);
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --card-shadow-hover: 0 8px 30px rgba(102, 126, 234, 0.18);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --font-primary: 'DM Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            --text-primary: #1a1a2e;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+        }
 
+        /* ===== 全局重置 ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-page);
+            min-height: 100vh;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== 页头 - 光晕效果 ===== */
+        header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -10%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: var(--transition);
+        }
+        header a:hover { opacity: 0.85; }
+        header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+        header span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== 容器 ===== */
+        .container {
+            padding: 24px 16px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ===== 详情卡片 - 玻璃质感 ===== */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--glass-shadow);
+            transition: var(--transition);
+        }
+        .card:hover {
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+            transform: translateY(-1px);
+        }
+        .card .title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== 信息行 ===== */
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            transition: var(--transition);
+        }
+        .row:last-child { border-bottom: none; }
+        .row:hover {
+            padding-left: 6px;
+            background: rgba(102, 126, 234, 0.03);
+            border-radius: 6px;
+        }
+        .label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .value {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        /* ===== 按钮容器 ===== */
+        .action-bar {
+            text-align: center;
+            padding: 12px 0 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== 按钮样式 ===== */
+        .btn {
+            padding: 12px 28px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: var(--font-primary);
+            transition: var(--transition);
+            letter-spacing: 0.3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:active {
+            transform: scale(0.96);
+        }
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.3);
+        }
+        .btn-primary:hover {
+            background: var(--primary-gradient-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+        .btn-secondary {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--card-shadow);
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        /* ===== 空状态 ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+        .empty-state p {
+            font-size: 15px;
+        }
+
+        /* ===== 夜间模式 ===== */
+        body.dark-mode {
+            --bg-page: #0f0f23;
+            --glass-bg: rgba(22, 33, 62, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            --card-shadow-hover: 0 8px 30px rgba(102, 126, 234, 0.15);
+            --text-primary: #e8e6e3;
+            --text-secondary: #9ca3af;
+            --text-light: #6b7280;
+        }
+        body.dark-mode .card { background: var(--glass-bg); }
+        body.dark-mode .card .title { color: var(--text-primary); border-bottom-color: rgba(255,255,255,0.04); }
+        body.dark-mode .row { border-bottom-color: rgba(255,255,255,0.04); }
+        body.dark-mode .row:hover { background: rgba(102, 126, 234, 0.08); }
+        body.dark-mode .label { color: var(--text-secondary); }
+        body.dark-mode .value { color: var(--text-primary); }
+        body.dark-mode .btn-secondary { background: var(--glass-bg); color: var(--text-primary); border-color: rgba(255,255,255,0.08); }
+        body.dark-mode .btn-secondary:hover { background: rgba(45,52,54,0.8); }
     </style>
 </head>
 <body>
     <header>
-        <a href="javascript:history.back()" style="color: white;">← 返回</a>
+        <a href="javascript:history.back()">← 返回</a>
         <h1>订单详情</h1>
         <span></span>
     </header>
 
     <div class="container" th:if="${order != null}">
         <div class="card">
-            <div class="title">基本信息</div>
+            <div class="title">📋 基本信息</div>
             <div class="row"><span class="label">订单号</span><span class="value">#<span th:text="${order.id}"></span></span></div>
             <div class="row"><span class="label">下单时间</span><span class="value" th:text="${order.datetime}"></span></div>
-            <div class="row"><span class="label">订单金额</span><span class="value" style="color: #e91e63;">¥<span th:text="${order.total}"></span></span></div>
+            <div class="row"><span class="label">订单金额</span><span class="value" style="color: var(--accent-pink); font-weight: 700;">¥<span th:text="${order.total}"></span></span></div>
         </div>
 
         <div class="card">
-            <div class="title">收货信息</div>
+            <div class="title">📍 收货信息</div>
             <div class="row"><span class="label">收货人</span><span class="value" th:text="${order.name}"></span></div>
             <div class="row"><span class="label">联系电话</span><span class="value" th:text="${order.phone}"></span></div>
             <div class="row"><span class="label">收货地址</span><span class="value" th:text="${order.address}"></span></div>
         </div>
 
         <div class="card">
-            <div class="title">商品信息</div>
+            <div class="title">🛒 商品信息</div>
             <div class="row"><span class="label">商品数量</span><span class="value" th:text="${order.amount}"></span>件</div>
             <div th:if="${order.goods != null && !order.goods.isEmpty()}">
                 <div th:each="item : ${order.goods}" class="row">
@@ -70,20 +284,20 @@
         </div>
 
         <div class="card">
-            <div class="title">佣金信息</div>
-            <div class="row"><span class="label">佣金金额</span><span class="value" style="color: #4caf50; font-weight: 600;">¥<span th:text="${order.commission != null ? order.commission : '0.00'}"></span></span></div>
+            <div class="title">💵 佣金信息</div>
+            <div class="row"><span class="label">佣金金额</span><span class="value" style="color: var(--accent-green); font-weight: 700;">¥<span th:text="${order.commission != null ? order.commission : '0.00'}"></span></span></div>
         </div>
 
-        <div style="text-align: center; padding: 20px;">
+        <div class="action-bar">
             <button class="btn btn-secondary" onclick="history.back()">返回列表</button>
-            <button th:if="${order.status == 3}" class="btn btn-primary" th:onclick="|location.href='/rider/acceptOrder?id=${order.id}'|">接单</button>
-            <button th:if="${order.status == 6}" class="btn btn-primary" th:onclick="|location.href='/rider/confirmPickup?id=${order.id}'|">确认取货</button>
-            <button th:if="${order.status == 7}" class="btn btn-primary" th:onclick="|location.href='/rider/confirmDeliver?id=${order.id}'|">确认送达</button>
+            <button th:if="${order.status == 3}" class="btn btn-primary" th:onclick="|location.href='/rider/acceptOrder?id=${order.id}'|">📦 接单</button>
+            <button th:if="${order.status == 6}" class="btn btn-primary" th:onclick="|location.href='/rider/confirmPickup?id=${order.id}'|">✅ 确认取货</button>
+            <button th:if="${order.status == 7}" class="btn btn-primary" th:onclick="|location.href='/rider/confirmDeliver?id=${order.id}'|">🎯 确认送达</button>
         </div>
     </div>
 
     <div class="container" th:if="${order == null}">
-        <div style="text-align: center; padding: 40px; color: #999;">
+        <div class="empty-state">
             <p>订单不存在</p>
         </div>
     </div>

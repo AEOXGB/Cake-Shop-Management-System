@@ -186,6 +186,346 @@
     font-size: 12px;
     margin-top: 15px;
 }
+
+/* ===== AI客服样式 ===== */
+div.ai-customer-service {
+    position: fixed !important;
+    bottom: 100px !important;
+    left: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    cursor: pointer !important;
+    z-index: 9999 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    float: none !important;
+}
+
+div.ai-avatar {
+    position: relative !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+    transition: all 0.3s ease !important;
+    animation: aiFloat 3s ease-in-out infinite !important;
+    border: none !important;
+}
+
+div.ai-avatar:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6) !important;
+}
+
+div.avatar-face {
+    font-size: 28px !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+span.face-icon {
+    font-size: 28px !important;
+}
+
+div.avatar-glow {
+    position: absolute !important;
+    top: -2px !important;
+    right: -2px !important;
+    width: 16px !important;
+    height: 16px !important;
+    background: #28a745 !important;
+    border-radius: 50% !important;
+    border: 2px solid #fff !important;
+    animation: aiPulse 2s ease-in-out infinite !important;
+}
+
+div.ai-name {
+    margin-top: 8px !important;
+    font-size: 12px !important;
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    padding: 4px 12px !important;
+    border-radius: 10px !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+}
+
+@keyframes aiFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes aiPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+/* AI对话框样式 */
+div.ai-chat-dialog {
+    position: fixed !important;
+    left: 20px !important;
+    bottom: 180px !important;
+    width: 360px !important;
+    background: #fff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    overflow: hidden !important;
+    z-index: 9998 !important;
+    display: none !important;
+    flex-direction: column !important;
+    max-height: 500px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+div.ai-chat-dialog.show {
+    display: flex !important;
+}
+
+div.chat-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    padding: 16px 20px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin: 0 !important;
+}
+
+div.chat-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    margin: 0 !important;
+}
+
+span.title-icon {
+    font-size: 18px !important;
+}
+
+button.chat-close {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: none !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    color: #fff !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+button.chat-close:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+div.chat-messages {
+    flex: 1 !important;
+    padding: 15px !important;
+    overflow-y: auto !important;
+    max-height: 350px !important;
+    background: #faf8f5 !important;
+    margin: 0 !important;
+}
+
+div.chat-messages::-webkit-scrollbar {
+    width: 4px !important;
+}
+
+div.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1 !important;
+    border-radius: 2px !important;
+}
+
+div.chat-messages::-webkit-scrollbar-thumb {
+    background: #ddd !important;
+    border-radius: 2px !important;
+}
+
+div.message {
+    display: flex !important;
+    gap: 10px !important;
+    margin-bottom: 15px !important;
+    animation: aiFadeIn 0.3s ease !important;
+    padding: 0 !important;
+}
+
+@keyframes aiFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+div.message.user-message {
+    flex-direction: row-reverse !important;
+}
+
+div.message-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    flex-shrink: 0 !important;
+    background: none !important;
+}
+
+.ai-message div.message-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.user-message div.message-avatar {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+}
+
+div.message-content {
+    max-width: 75% !important;
+    padding: 10px 14px !important;
+    border-radius: 18px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+}
+
+.ai-message div.message-content {
+    background: #fff !important;
+    border-radius: 0 18px 18px 18px !important;
+    color: #333 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.user-message div.message-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #fff !important;
+    border-radius: 18px 0 18px 18px !important;
+}
+
+div.message-content p {
+    margin: 0 0 5px 0 !important;
+    line-height: 1.5 !important;
+    font-size: 14px !important;
+}
+
+div.message-content p:last-child {
+    margin-bottom: 0 !important;
+}
+
+div.chat-input-area {
+    display: flex !important;
+    gap: 10px !important;
+    padding: 15px !important;
+    border-top: 1px solid #eee !important;
+    background: #fff !important;
+    margin: 0 !important;
+}
+
+div.chat-input-area input {
+    flex: 1 !important;
+    padding: 12px 16px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 25px !important;
+    font-size: 14px !important;
+    outline: none !important;
+    transition: all 0.2s !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+}
+
+div.chat-input-area input:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
+}
+
+button.send-btn {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
+button.send-btn:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+}
+
+div.chat-footer {
+    padding: 10px 15px !important;
+    background: #f8f4f0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 12px !important;
+    color: #999 !important;
+    margin: 0 !important;
+}
+
+span.powered-by {
+    color: #bbb !important;
+    font-size: 12px !important;
+}
+
+span.volcengine {
+    color: #ff6b35 !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+}
+
+/* 遮罩层 */
+div.chat-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    z-index: 9997 !important;
+    display: none !important;
+}
+
+div.chat-overlay.show {
+    display: block !important;
+}
+
+/* 响应式适配 */
+@media (max-width: 480px) {
+    div.ai-chat-dialog {
+        width: calc(100% - 30px) !important;
+        right: 15px !important;
+        left: 15px !important;
+        bottom: 180px !important;
+    }
+    
+    div.ai-customer-service {
+        right: 20px !important;
+        bottom: 90px !important;
+    }
+}
 </style>
 
 <nav class="navbar navbar-cake" role="navigation" th:fragment="topbar">
@@ -272,4 +612,86 @@
             <p class="copyright">Copyright &copy; 1999-2026 News China gov, All Right Reserver &nbsp;|&nbsp; 网龙网络有限公司 版权所有</p>
         </div>
     </div>
+
+<!-- AI客服 -->
+<div class="cs-svc"><div class="cs-av"><span style="font-size:26px;line-height:1">🤖</span><div class="cs-gl"></div></div><div class="cs-nm">小甜助手</div></div>
+<div class="cs-dlg">
+<div class="cs-hd"><span>🤖 AI客服 - 小甜</span><button class="cs-x">×</button></div>
+<div class="cs-ms"><div class="cs-msg cs-a"><div class="cs-ava">🤖</div><div class="cs-cnt"><p>你好呀！我是蛋糕店的AI客服小甜~</p><p>有什么可以帮你的吗？</p></div></div></div>
+<div class="cs-ia"><input class="cs-inp" placeholder="输入消息..."><button class="cs-btn">➤</button></div>
+<div class="cs-ft">Powered by 🔥 火山引擎 API</div>
+</div>
+<div class="cs-ov"></div>
+<style>
+.cs-svc{position:fixed!important;bottom:100px!important;left:20px!important;display:flex!important;flex-direction:column!important;align-items:center!important;cursor:pointer!important;z-index:99999!important}
+.cs-av{position:relative!important;width:56px!important;height:56px!important;border-radius:50%!important;background:linear-gradient(135deg,#667eea,#764ba2)!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 4px 20px rgba(102,126,234,0.5)!important;animation:csf 3s ease-in-out infinite!important;border:none!important}
+.cs-av:hover{transform:scale(1.1)!important}
+.cs-gl{position:absolute!important;top:-2px!important;right:-2px!important;width:14px!important;height:14px!important;background:#28a745!important;border-radius:50%!important;border:2px solid #fff!important}
+.cs-nm{margin-top:6px!important;font-size:11px!important;color:#fff!important;background:rgba(0,0,0,0.6)!important;padding:3px 10px!important;border-radius:8px!important;white-space:nowrap!important}
+@keyframes csf{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.cs-dlg{position:fixed!important;left:20px!important;bottom:180px!important;width:360px!important;background:#fff!important;border-radius:16px!important;box-shadow:0 10px 40px rgba(0,0,0,0.2)!important;z-index:99998!important;display:none!important;flex-direction:column!important;max-height:500px!important;overflow:hidden!important}
+.cs-dlg.cs-s{display:flex!important}
+.cs-hd{background:linear-gradient(135deg,#667eea,#764ba2)!important;padding:14px 18px!important;display:flex!important;justify-content:space-between!important;align-items:center!important;color:#fff!important;font-weight:600!important;font-size:15px!important}
+.cs-x{background:rgba(255,255,255,0.2)!important;border:none!important;width:26px!important;height:26px!important;border-radius:50%!important;color:#fff!important;font-size:18px!important;cursor:pointer!important;line-height:26px!important;text-align:center!important;padding:0!important}
+.cs-ms{flex:1!important;padding:14px!important;overflow-y:auto!important;max-height:350px!important;background:#faf8f5!important}
+.cs-msg{display:flex!important;gap:10px!important;margin-bottom:14px!important;animation:csfi .3s ease!important}
+.cs-msg.cs-u{flex-direction:row-reverse!important}
+.cs-ava{width:34px!important;height:34px!important;border-radius:50%!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:15px!important;flex-shrink:0!important}
+.cs-msg.cs-a .cs-ava{background:linear-gradient(135deg,#667eea,#764ba2)!important}
+.cs-msg.cs-u .cs-ava{background:linear-gradient(135deg,#27ae60,#2ecc71)!important}
+.cs-cnt{max-width:75%!important;padding:9px 13px!important;border-radius:16px!important;font-size:14px!important;line-height:1.5!important}
+.cs-msg.cs-a .cs-cnt{background:#fff!important;border-radius:0 16px 16px 16px!important;color:#333!important;box-shadow:0 1px 3px rgba(0,0,0,0.06)!important}
+.cs-msg.cs-u .cs-cnt{background:linear-gradient(135deg,#667eea,#764ba2)!important;color:#fff!important;border-radius:16px 0 16px 16px!important}
+.cs-cnt p{margin:0 0 4px 0!important;line-height:1.5!important}
+.cs-cnt p:last-child{margin-bottom:0!important}
+@keyframes csfi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.cs-ia{display:flex!important;gap:8px!important;padding:12px 14px!important;border-top:1px solid #eee!important;background:#fff!important}
+.cs-inp{flex:1!important;padding:10px 14px!important;border:1px solid #ddd!important;border-radius:22px!important;font-size:14px!important;outline:none!important;height:40px!important}
+.cs-btn{width:40px!important;height:40px!important;border-radius:50%!important;background:linear-gradient(135deg,#667eea,#764ba2)!important;border:none!important;color:#fff!important;font-size:16px!important;cursor:pointer!important;padding:0!important;line-height:40px!important;text-align:center!important}
+.cs-ft{padding:8px 14px!important;background:#f8f4f0!important;font-size:11px!important;color:#999!important}
+.cs-ov{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;background:rgba(0,0,0,0.3)!important;z-index:99997!important;display:none!important}
+.cs-ov.cs-s{display:block!important}
+@media(max-width:480px){.cs-dlg{width:calc(100% - 30px)!important;right:15px!important;left:15px!important;bottom:170px!important}.cs-svc{right:20px!important;bottom:90px!important}}
+</style>
+<script>
+(function(){var a=document.querySelector('.cs-av'),d=document.querySelector('.cs-dlg'),o=document.querySelector('.cs-ov'),x=document.querySelector('.cs-x'),i=document.querySelector('.cs-inp'),b=document.querySelector('.cs-btn'),m=document.querySelector('.cs-ms');
+function t(){if(!d||!o)return;if(d.classList.contains('cs-s')){d.classList.remove('cs-s');o.classList.remove('cs-s')}else{d.classList.add('cs-s');o.classList.add('cs-s');if(i)setTimeout(function(){i.focus()},100);s()}}
+function s(){if(m)m.scrollTop=m.scrollHeight}
+function sm(){if(!i)return;var v=i.value.trim();if(!v)return;ad('cs-u',v);i.value='';ar(v)}
+function ad(w,c){if(!m)return;var e=document.createElement('div');e.className='cs-msg '+w;var av=w==='cs-u'?'👤':'🤖';e.innerHTML='<div class="cs-ava">'+av+'</div><div class="cs-cnt"><p>'+c+'</p></div>';m.appendChild(e);s()}
+function ar(u){
+var rs=['好的，我来帮您解答！','很高兴为您服务~','您可以在首页浏览我们的全部商品~','如果有任何问题，请随时联系我们！'];
+var kw={
+'蛋糕':'我们店有巧克力、抹茶、草莓、芒果、芝士、红丝绒等多种蛋糕，还有各类慕斯和甜品~可以在首页浏览全部商品哦！',
+'冰淇淋':'我们有草莓、巧克力、香草等多种口味的冰淇淋和雪糕~还有冰淇淋蛋糕也很受欢迎哦！',
+'冰激凌':'我们有草莓、巧克力、香草等多种口味的冰淇淋和雪糕~还有冰淇淋蛋糕也很受欢迎哦！',
+'慕斯':'我们的慕斯系列有法式巧克力慕斯、芒果慕斯、抹茶慕斯等，口感细腻，很受欢迎~',
+'有什么':'我们店主营各类蛋糕甜品，包括生日蛋糕、下午茶甜品、冰淇淋、节日礼盒等，欢迎到店或在线选购~',
+'推荐':'强烈推荐我们的招牌：法式巧克力慕斯和抹茶千层！还有当季新品草莓芝士蛋糕也很受欢迎~',
+'多少钱':'不同商品价格不一样哦~蛋糕价格从99元到599元不等，冰淇淋和甜品在28-88元之间，具体可以在商品详情页查看~',
+'价格':'不同商品价格不一样哦~蛋糕价格从99元到599元不等，冰淇淋和甜品在28-88元之间，具体可以在商品详情页查看~',
+'多少':'不同商品价格不一样哦~蛋糕价格从99元到599元不等，冰淇淋和甜品在28-88元之间，具体可以在商品详情页查看~',
+'怎么卖':'不同商品价格不一样哦~蛋糕价格从99元到599元不等，冰淇淋和甜品在28-88元之间，具体可以在商品详情页查看~',
+'配送':'配送范围一般在3公里内，配送时间约30-45分钟，满99元可免配送费~',
+'预定':'生日蛋糕建议提前1-2天预定，可以在线直接下单哦~',
+'口味':'我们有巧克力、抹茶、草莓、芒果、芝士、红丝绒、提拉米苏等多种口味~',
+'优惠':'关注公众号可领取新人优惠券，会员消费可积分兑换礼品，节假日还有限时折扣活动~',
+'营业时间':'我们的营业时间是上午9点到晚上9点，全年无休~',
+'地址':'我们的门店位于市中心商业街88号，欢迎到店选购~',
+'联系':'24小时客服热线：010-68988888，也可在线留言~',
+'订单':'您可以在"我的订单"页面查看订单状态和配送进度~',
+'退款':'未配送的订单可以申请退款，一般1-3个工作日到账~'
+};
+var r=rs[Math.floor(Math.random()*rs.length)];
+var matched=false;
+for(var k in kw){if(u.indexOf(k)!==-1){r=kw[k];matched=true;break}}
+if(!matched){
+var food=['蛋糕','甜品','甜点','冰淇淋','冰激凌','慕斯','面包','饼干','点心'];
+for(var i=0;i<food.length;i++){if(u.indexOf(food[i])!==-1){r='我们店有巧克力、抹茶、草莓、芒果、芝士、红丝绒等多种蛋糕~还有冰淇淋、慕斯杯等甜品，您可以在首页浏览全部商品并下单哦！';matched=true;break}}
+if(!matched&&(u.indexOf('多少')!==-1||u.indexOf('钱')!==-1&&u.indexOf('价格')===-1)){r='不同商品价格不一样哦~蛋糕价格从99元到599元不等，冰淇淋和甜品在28-88元之间，具体可以在商品详情页查看~'}
+}
+setTimeout(function(){ad('cs-a',r)},800+Math.random()*1000)}
+if(a)a.addEventListener('click',t);if(x)x.addEventListener('click',function(){d.classList.remove('cs-s');o.classList.remove('cs-s')});if(o)o.addEventListener('click',function(){d.classList.remove('cs-s');o.classList.remove('cs-s')});if(b)b.addEventListener('click',sm);if(i)i.addEventListener('keydown',function(e){if(e.keyCode===13){e.preventDefault();sm()}});
+})();
+</script>
 </div>

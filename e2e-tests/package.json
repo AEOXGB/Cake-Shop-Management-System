@@ -1,0 +1,15 @@
+{
+  "name": "cakeshop-e2e-tests",
+  "version": "1.0.0",
+  "description": "CakeShop 项目端到端自动化测试",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:report": "npx playwright show-report",
+    "report": "npx playwright test --reporter=html,json"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "playwright": "^1.52.0"
+  }
+}

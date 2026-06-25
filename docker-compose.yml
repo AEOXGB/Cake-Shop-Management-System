@@ -1,0 +1,41 @@
+services:
+  # MySQL 数据库服务
+  mysql:
+    image: mysql:8.0
+    container_name: cakeshop-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: cakeshop@2026  # 请修改为你的密码
+      MYSQL_DATABASE: cookieshop
+      MYSQL_USER: cakeshop_user
+      MYSQL_PASSWORD: cakeshop@user2026   # 请修改为你的密码
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - cakeshop-network
+
+  # CakeShop 应用服务
+  cakeshop:
+    build: .
+    container_name: cakeshop-app
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/cookieshop?characterEncoding=UTF-8&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: cakeshop_user
+      SPRING_DATASOURCE_PASSWORD: cakeshop@user2026  # 与上面的 MYSQL_PASSWORD 一致
+    ports:
+      - "8090:8090"
+    depends_on:
+      - mysql
+    networks:
+      - cakeshop-network
+
+volumes:
+  mysql_data:
+
+networks:
+  cakeshop-network:
+    driver: bridge

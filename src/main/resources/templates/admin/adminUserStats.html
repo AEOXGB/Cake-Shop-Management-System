@@ -135,6 +135,13 @@
                 <p style="color: #8a6d5b; font-size: 14px; margin-top: 4px;">管理所有已审核用户账户</p>
             </div>
         </div>
+        
+        <!-- 搜索框 -->
+        <form action="/admin/userStats" method="get" class="search-box" style="margin-bottom: 20px;">
+            <input type="text" name="keyword" placeholder="搜索用户名、姓名、电话..." th:value="${keyword != null ? keyword : ''}">
+            <button type="submit" class="btn btn-primary">搜索</button>
+            <a th:href="@{/admin/userStats}" class="btn btn-secondary">重置</a>
+        </form>
 
         <!-- 用户表格 -->
         <table class="data-table">
@@ -177,15 +184,15 @@
         <div th:if="${totalPages > 1}" class="stats-footer">
             <span style="margin-right: 20px;">共 <em>[[${totalItems}]]</em> 条记录</span>
             <div class="pagination-nav">
-                <a th:if="${currentPage > 1}" th:href="@{/admin/userStats(page=${currentPage - 1})}">上一页</a>
+                <a th:if="${currentPage > 1}" th:href="@{/admin/userStats(page=${currentPage - 1}, keyword=${keyword != null ? keyword : ''})}">上一页</a>
                 <span th:if="${currentPage <= 1}" class="disabled">上一页</span>
                 
                 <span th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
-                    <a th:if="${pageNum != currentPage}" th:href="@{/admin/userStats(page=${pageNum})}" th:text="${pageNum}">1</a>
+                    <a th:if="${pageNum != currentPage}" th:href="@{/admin/userStats(page=${pageNum}, keyword=${keyword != null ? keyword : ''})}" th:text="${pageNum}">1</a>
                     <span th:if="${pageNum == currentPage}" class="current" th:text="${pageNum}">1</span>
                 </span>
                 
-                <a th:if="${currentPage < totalPages}" th:href="@{/admin/userStats(page=${currentPage + 1})}">下一页</a>
+                <a th:if="${currentPage < totalPages}" th:href="@{/admin/userStats(page=${currentPage + 1}, keyword=${keyword != null ? keyword : ''})}">下一页</a>
                 <span th:if="${currentPage >= totalPages}" class="disabled">下一页</span>
             </div>
         </div>
@@ -194,6 +201,8 @@
         <div th:if="${totalPages <= 1}" class="stats-footer">
             共 <em>[[${totalItems}]]</em> 条记录
         </div>
+        
+
     </div>
 </body>
 </html>

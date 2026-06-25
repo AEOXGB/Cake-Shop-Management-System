@@ -1,5 +1,0 @@
-笔记标题
-实现购物车列表功能，逻辑如下：用户点击导航栏的购物车图标 commons.html 45-48 ，跳转界面 MyCart.html ，前端代码参考 MyCart.jsp,将其改成html格式，并使用thymeleaf。其中商品名称是goods表里的name字段，需要cart和goods表使用left join查询两个表的数据。且实现的是分页功能，一页5条数据。完成前端代码改造后并自己设计好看界面。
-
-
-完成付款功能，逻辑是：用户点击里的立即支付按钮，在弹出的面板，面板代码在https://openzui.com/1/#javascript/modal上，上点击面板上确认支付按钮，生成订单，把这个用户购物车里的所有商品，填入order表以及order item表，order是总表,其中status是2:已付款 3:已发货 4:已完成，默认支付成功为2，paytype是1是微信，2是支付宝，order表里的id是订单号，需要生成时间戳，orderitem是子表，记录的是订单里的详细商品。支付成功把购物车表里这个用户的商品删除，返回首页。

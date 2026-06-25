@@ -1,0 +1,9 @@
+.mvn/
+.git/
+*.log
+.DS_Store
+*.iml
+.idea/
+.settings/
+.project
+.classpath
