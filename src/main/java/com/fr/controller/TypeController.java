@@ -14,6 +14,12 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+/**
+ * 分类控制器
+ * 所属模块：商品分类管理模块
+ * 处理商品分类相关的请求，包括添加分类、编辑分类、删除分类等功能
+ * 请求路径前缀：/admin
+ */
 @Controller
 @RequestMapping("/admin")
 public class TypeController {
@@ -25,7 +31,10 @@ public class TypeController {
     private GoodsMapper goodsMapper;
 
     /**
-     * 添加分类页面
+     * 添加分类页面方法
+     * 跳转到添加分类的页面，需要管理员权限
+     * @param request HttpServletRequest请求对象
+     * @return ModelAndView 返回添加分类页面
      */
     @RequestMapping("/addType")
     public ModelAndView addType(HttpServletRequest request) {
@@ -45,7 +54,10 @@ public class TypeController {
     }
 
     /**
-     * 保存分类
+     * 保存分类方法
+     * 新增商品分类，保存分类名称
+     * @param request HttpServletRequest请求对象，包含name（分类名称）参数
+     * @return String 重定向到分类列表页面
      */
     @RequestMapping("/saveType")
     public String saveType(HttpServletRequest request) {
@@ -61,7 +73,10 @@ public class TypeController {
     }
 
     /**
-     * 编辑分类页面
+     * 编辑分类页面方法
+     * 跳转到编辑分类的页面，回显分类信息，需要管理员权限
+     * @param request HttpServletRequest请求对象，包含id（分类ID）参数
+     * @return ModelAndView 返回编辑分类页面
      */
     @RequestMapping("/editType")
     public ModelAndView editType(HttpServletRequest request) {
@@ -88,7 +103,10 @@ public class TypeController {
     }
 
     /**
-     * 更新分类
+     * 更新分类方法
+     * 更新商品分类的名称
+     * @param request HttpServletRequest请求对象，包含id（分类ID）、name（分类名称）参数
+     * @return String 重定向到分类列表页面
      */
     @RequestMapping("/updateType")
     public String updateType(HttpServletRequest request) {
@@ -108,7 +126,10 @@ public class TypeController {
     }
 
     /**
-     * 删除分类
+     * 删除分类方法
+     * 删除商品分类，只有当该分类下没有商品时才能删除
+     * @param request HttpServletRequest请求对象，包含id（分类ID）参数
+     * @return String 重定向到分类列表页面
      */
     @RequestMapping("/deleteType")
     public String deleteType(HttpServletRequest request) {

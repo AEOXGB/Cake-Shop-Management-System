@@ -21,6 +21,12 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * AI客服控制器
+ * 所属模块：AI客服模块
+ * 处理AI客服相关的请求，包括AI对话、获取商品列表、获取AI配置等功能
+ * 请求路径前缀：/ai
+ */
 @RestController
 @RequestMapping("/ai")
 @CrossOrigin
@@ -54,6 +60,8 @@ public class AiController {
 
     /**
      * 获取系统商品信息用于构建prompt
+     * 查询所有分类和对应商品，组装成商品信息文本
+     * @return 格式化的商品信息字符串
      */
     private String getGoodsInfo() {
         StringBuilder goodsInfo = new StringBuilder();
@@ -98,6 +106,8 @@ public class AiController {
 
     /**
      * 构建系统prompt
+     * 将商品信息和客服角色设定组装成系统提示词
+     * @return 完整的系统提示词字符串
      */
     private String buildSystemPrompt() {
         String goodsInfo = getGoodsInfo();
@@ -118,6 +128,9 @@ public class AiController {
 
     /**
      * AI对话接口
+     * 接收用户消息，调用火山引擎AI接口返回AI客服的回复
+     * @param request 请求体，包含message（用户消息）参数
+     * @return Map包含success（是否成功）和message（AI回复内容）
      */
     @PostMapping("/chat")
     public Map<String, Object> chat(@RequestBody Map<String, String> request) {
@@ -183,6 +196,9 @@ public class AiController {
 
     /**
      * 转义JSON字符串
+     * 对特殊字符进行转义，防止JSON格式错误
+     * @param str 原始字符串
+     * @return 转义后的JSON安全字符串
      */
     private String escapeJson(String str) {
         if (str == null) {
@@ -197,6 +213,9 @@ public class AiController {
 
     /**
      * 解析AI响应
+     * 解析火山引擎API返回的JSON响应，提取AI回复内容
+     * @param response API返回的原始JSON字符串
+     * @return 解析后的AI回复文本
      */
     private String parseResponse(String response) {
         try {
@@ -245,6 +264,8 @@ public class AiController {
 
     /**
      * 获取商品列表（用于前端展示）
+     * 查询所有商品信息并返回
+     * @return Map包含success（是否成功）和goods（商品列表）
      */
     @GetMapping("/goods")
     public Map<String, Object> getGoods() {
@@ -266,6 +287,8 @@ public class AiController {
     
     /**
      * 获取AI配置信息
+     * 返回AI接口的配置信息（API密钥、模型、接口地址）
+     * @return Map包含success（是否成功）、apiKey、model、apiUrl
      */
     @GetMapping("/config")
     public Map<String, Object> getConfig() {

@@ -37,6 +37,13 @@ import com.fr.javaBean.OperationLog;
 import com.fr.mapper.GoodsMapper;
 import com.fr.mapper.OperationLogMapper;
 
+/**
+ * 管理员控制器
+ * 所属模块：后台管理模块
+ * 处理请求路径：/admin
+ * 功能描述：负责管理员后台的所有功能，包括系统概览、商品管理、订单管理、用户管理、
+ *           骑手管理、数据统计、库存预警、系统设置、操作日志等
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -70,6 +77,10 @@ public class AdminController {
 
     /**
      * 系统概览 - 管理员首页
+     * 显示管理员后台首页，包含商品总数、订单总数、用户总数、销售总额、今日订单数、
+     * 待发货订单数、分类数量、本月销售额、热销商品、最近订单等统计数据
+     * @param request HttpServletRequest请求对象，用于获取session中的用户信息
+     * @return ModelAndView 返回管理员首页视图，包含各类统计数据
      */
     @RequestMapping("/index")
     public ModelAndView adminIndex(HttpServletRequest request) {
@@ -152,7 +163,10 @@ public class AdminController {
     }
 
     /**
-     * 获取热销商品
+     * 获取热销商品列表
+     * 根据订单项统计商品销量，返回销量最高的前N个商品
+     * @param limit 返回商品数量限制
+     * @return List<Map<String, Object>> 热销商品列表，包含商品ID、名称、封面、价格、销量
      */
     private List<Map<String, Object>> getHotGoods(int limit) {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -193,7 +207,10 @@ public class AdminController {
     }
 
     /**
-     * 获取最近订单
+     * 获取最近订单列表
+     * 按时间倒序查询最近的N条订单
+     * @param limit 返回订单数量限制
+     * @return List<Map<String, Object>> 最近订单列表，包含订单ID、收货人、金额、时间、状态
      */
     private List<Map<String, Object>> getRecentOrders(int limit) {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -217,7 +234,10 @@ public class AdminController {
     }
 
     /**
-     * 获取订单状态文本
+     * 获取订单状态文本描述
+     * 根据订单状态码返回对应的中文状态描述
+     * @param status 订单状态码（2-已付款，3-待配送，4-已完成，5-已取消，6-待取货，7-配送中）
+     * @return String 订单状态中文描述
      */
     private String getStatusText(int status) {
         switch (status) {
@@ -232,7 +252,10 @@ public class AdminController {
     }
 
     /**
-     * 商品列表 - 简化版本，支持按商品ID和名称搜索
+     * 商品列表页面
+     * 显示所有商品列表，支持按商品ID和名称搜索，支持分页功能，同时显示库存预警数量
+     * @param request HttpServletRequest请求对象，包含keyword（搜索关键词）、page（当前页码）参数
+     * @return ModelAndView 返回商品列表页面视图
      */
     @RequestMapping("/goodsList")
     public ModelAndView goodsList(HttpServletRequest request) {
@@ -325,7 +348,10 @@ public class AdminController {
     }
 
     /**
-     * 商品详情
+     * 商品详情页面
+     * 显示指定商品的详细信息，包括商品基本信息和分类列表
+     * @param request HttpServletRequest请求对象，包含id（商品ID）参数
+     * @return ModelAndView 返回商品详情页面视图
      */
     @RequestMapping("/goodsDetail")
     public ModelAndView goodsDetail(HttpServletRequest request) {
@@ -355,7 +381,10 @@ public class AdminController {
     }
 
     /**
-     * 编辑商品
+     * 编辑商品页面
+     * 显示商品编辑表单，用于修改已有商品的信息
+     * @param request HttpServletRequest请求对象，包含id（商品ID）参数
+     * @return ModelAndView 返回商品编辑页面视图
      */
     @RequestMapping("/editGoods")
     public ModelAndView editGoods(HttpServletRequest request) {
@@ -389,6 +418,9 @@ public class AdminController {
 
     /**
      * 删除商品
+     * 根据商品ID删除指定商品
+     * @param request HttpServletRequest请求对象，包含id（商品ID）参数
+     * @return String 重定向到商品列表页面
      */
     @RequestMapping("/deleteGoods")
     public String deleteGoods(HttpServletRequest request) {
@@ -402,6 +434,10 @@ public class AdminController {
 
     /**
      * 保存商品（新增或更新）
+     * 处理商品表单提交，根据是否有ID判断是新增还是更新商品，支持图片上传
+     * 新增商品时会向所有已审核的骑手发送新商品上架通知
+     * @param request HttpServletRequest请求对象，包含商品信息和图片文件
+     * @return String 重定向到商品列表页面
      */
     @RequestMapping("/saveGoods")
     public String saveGoods(HttpServletRequest request) {
@@ -499,6 +535,8 @@ public class AdminController {
     
     /**
      * 向所有骑手发送新商品通知
+     * 新商品上架时，向所有已审核通过的骑手发送系统通知
+     * @param goodsName 新上架商品的名称
      */
     private void sendNewGoodsNotification(String goodsName) {
         try {
@@ -522,8 +560,16 @@ public class AdminController {
         }
     }
     
+    // 文件上传计数器，用于生成唯一文件名
     private static int fileCounter = 0;
 
+    /**
+     * 保存上传的文件
+     * 将上传的文件保存到项目根目录的picture文件夹中，使用时间戳+计数器确保文件名唯一
+     * @param file 上传的文件对象
+     * @param request HttpServletRequest请求对象
+     * @return String 文件保存后的访问路径，失败返回null
+     */
     private String saveFile(MultipartFile file, HttpServletRequest request) {
         if (file == null || file.isEmpty()) {
             return null;
@@ -558,7 +604,10 @@ public class AdminController {
     }
 
     /**
-     * 添加商品
+     * 添加商品页面
+     * 显示商品添加表单，用于新增商品
+     * @param request HttpServletRequest请求对象，用于验证管理员权限
+     * @return ModelAndView 返回商品添加页面视图
      */
     @RequestMapping("/addGoods")
     public ModelAndView addGoods(HttpServletRequest request) {
@@ -580,7 +629,10 @@ public class AdminController {
     }
 
     /**
-     * 分类管理
+     * 分类管理页面
+     * 显示所有商品分类列表，用于分类管理
+     * @param request HttpServletRequest请求对象，用于验证管理员权限
+     * @return ModelAndView 返回分类管理页面视图
      */
     @RequestMapping("/categoryList")
     public ModelAndView categoryList(HttpServletRequest request) {
@@ -602,7 +654,10 @@ public class AdminController {
     }
 
     /**
-     * 订单列表
+     * 订单列表页面
+     * 显示所有订单列表，支持按订单ID和收货人姓名搜索，支持分页
+     * @param request HttpServletRequest请求对象，包含keyword（搜索关键词）、page（当前页码）参数
+     * @return ModelAndView 返回订单列表页面视图
      */
     @RequestMapping("/orderList")
     public ModelAndView orderList(HttpServletRequest request) {
@@ -669,7 +724,10 @@ public class AdminController {
     }
 
     /**
-     * 订单详情
+     * 订单详情页面
+     * 显示指定订单的详细信息，包括订单基本信息和订单项列表
+     * @param request HttpServletRequest请求对象，包含id（订单ID）参数
+     * @return ModelAndView 返回订单详情页面视图
      */
     @RequestMapping("/orderDetail")
     public ModelAndView orderDetail(HttpServletRequest request) {
@@ -733,7 +791,10 @@ public class AdminController {
     }
 
     /**
-     * 订单发货（更新状态）
+     * 订单发货
+     * 将已付款（状态2）的订单状态更新为待配送（状态3）
+     * @param request HttpServletRequest请求对象，包含id（订单ID）参数
+     * @return String 重定向到订单列表页面
      */
     @RequestMapping("/shipOrder")
     public String shipOrder(HttpServletRequest request) {
@@ -752,6 +813,9 @@ public class AdminController {
 
     /**
      * 设置订单佣金
+     * 显示设置佣金页面并处理佣金设置请求，为订单设置配送佣金金额
+     * @param request HttpServletRequest请求对象，包含id（订单ID）、commission（佣金金额）参数
+     * @return ModelAndView 返回佣金设置页面视图
      */
     @RequestMapping("/setCommission")
     public ModelAndView setCommission(HttpServletRequest request) {
@@ -793,7 +857,11 @@ public class AdminController {
     }
 
     /**
-     * 订单统计
+     * 销售统计页面
+     * 显示销售统计数据，包括活跃用户数、今日注册用户数、各状态订单数、
+     * 本月订单数、本月销售额、商品总数等
+     * @param request HttpServletRequest请求对象，用于验证管理员权限
+     * @return ModelAndView 返回销售统计页面视图
      */
     @RequestMapping("/orderStats")
     public ModelAndView orderStats(HttpServletRequest request) {
@@ -860,7 +928,10 @@ public class AdminController {
     }
 
     /**
-     * 用户列表 - 显示未审核用户
+     * 未审核用户列表页面
+     * 显示待审核和已冻结的用户列表，支持搜索和分页功能
+     * @param request HttpServletRequest请求对象，包含keyword（搜索关键词）、page（当前页码）参数
+     * @return ModelAndView 返回未审核用户列表页面视图
      */
     @RequestMapping("/userList")
     public ModelAndView userList(HttpServletRequest request) {
@@ -919,7 +990,10 @@ public class AdminController {
     }
     
     /**
-     * 审核用户
+     * 审核通过用户
+     * 将用户状态设置为已审核通过（isvalidate=1）
+     * @param request HttpServletRequest请求对象，包含userId（用户ID）参数
+     * @return ModelAndView 重定向到未审核用户列表页面
      */
     @RequestMapping("/validateUser")
     public ModelAndView validateUser(HttpServletRequest request) {
@@ -946,6 +1020,9 @@ public class AdminController {
     
     /**
      * 冻结用户
+     * 将用户状态设置为已冻结（isvalidate=2）
+     * @param request HttpServletRequest请求对象，包含userId（用户ID）参数
+     * @return ModelAndView 重定向到未审核用户列表页面
      */
     @RequestMapping("/freezeUser")
     public ModelAndView freezeUser(HttpServletRequest request) {
@@ -972,6 +1049,9 @@ public class AdminController {
     
     /**
      * 解冻用户
+     * 将已冻结用户的状态恢复为待审核（isvalidate=0）
+     * @param request HttpServletRequest请求对象，包含userId（用户ID）参数
+     * @return ModelAndView 重定向到未审核用户列表页面
      */
     @RequestMapping("/unfreezeUser")
     public ModelAndView unfreezeUser(HttpServletRequest request) {
@@ -997,7 +1077,10 @@ public class AdminController {
     }
     
     /**
-     * 显示修改用户页面
+     * 编辑用户信息页面
+     * 显示用户信息编辑表单，用于修改用户的基本信息
+     * @param request HttpServletRequest请求对象，包含userId（用户ID）参数
+     * @return ModelAndView 返回用户信息编辑页面视图
      */
     @RequestMapping("/editUser")
     public ModelAndView editUser(HttpServletRequest request) {
@@ -1023,7 +1106,10 @@ public class AdminController {
     }
     
     /**
-     * 显示权限管理页面
+     * 权限管理页面
+     * 显示用户权限设置页面，用于设置用户是否为管理员
+     * @param request HttpServletRequest请求对象，包含userId（用户ID）参数
+     * @return ModelAndView 返回权限管理页面视图
      */
     @RequestMapping("/setAdminPage")
     public ModelAndView setAdminPage(HttpServletRequest request) {
@@ -1049,7 +1135,10 @@ public class AdminController {
     }
     
     /**
-     * 修改用户信息
+     * 更新用户信息
+     * 处理用户信息修改表单提交，更新用户的邮箱、姓名、电话、地址、密码等信息
+     * @param request HttpServletRequest请求对象，包含用户信息参数
+     * @return ModelAndView 重定向到未审核用户列表页面
      */
     @RequestMapping("/updateUser")
     public ModelAndView updateUser(HttpServletRequest request) {
@@ -1096,6 +1185,9 @@ public class AdminController {
     
     /**
      * 设置管理员权限
+     * 设置或取消用户的管理员权限
+     * @param request HttpServletRequest请求对象，包含userId（用户ID）、isadmin（是否管理员）参数
+     * @return ModelAndView 重定向到未审核用户列表页面
      */
     @RequestMapping("/setAdmin")
     public ModelAndView setAdmin(HttpServletRequest request) {
@@ -1123,7 +1215,10 @@ public class AdminController {
     }
 
     /**
-     * 骑手列表 - 显示待审核骑手
+     * 骑手审核列表页面
+     * 显示待审核的骑手列表，支持搜索功能
+     * @param request HttpServletRequest请求对象，包含keyword（搜索关键词）参数
+     * @return ModelAndView 返回骑手审核列表页面视图
      */
     @RequestMapping("/riderList")
     public ModelAndView riderList(HttpServletRequest request) {
@@ -1176,7 +1271,10 @@ public class AdminController {
     }
 
     /**
-     * 审核骑手
+     * 审核通过骑手
+     * 将待审核骑手的状态设置为已审核通过（status=1）
+     * @param request HttpServletRequest请求对象，包含id（骑手ID）参数
+     * @return ModelAndView 重定向到骑手审核列表页面
      */
     @RequestMapping("/approveRider")
     public ModelAndView approveRider(HttpServletRequest request) {
@@ -1203,7 +1301,10 @@ public class AdminController {
     }
 
     /**
-     * 拒绝骑手
+     * 拒绝骑手申请
+     * 删除待审核的骑手申请记录
+     * @param request HttpServletRequest请求对象，包含id（骑手ID）参数
+     * @return ModelAndView 重定向到骑手审核列表页面
      */
     @RequestMapping("/rejectRider")
     public ModelAndView rejectRider(HttpServletRequest request) {
@@ -1225,7 +1326,10 @@ public class AdminController {
     }
 
     /**
-     * 用户统计 - 显示已审核用户列表（包含骑手）
+     * 用户列表页面
+     * 显示所有已审核通过的用户和骑手列表，支持搜索和分页功能
+     * @param request HttpServletRequest请求对象，包含keyword（搜索关键词）、page（当前页码）参数
+     * @return ModelAndView 返回用户列表页面视图
      */
     @RequestMapping("/userStats")
     public ModelAndView userStats(HttpServletRequest request) {
@@ -1304,7 +1408,10 @@ public class AdminController {
     }
 
     /**
-     * 系统设置 - 重定向到管理员设置页面
+     * 系统设置重定向
+     * 重定向到管理员设置页面
+     * @param request HttpServletRequest请求对象，用于验证管理员权限
+     * @return String 重定向到管理员设置页面
      */
     @RequestMapping("/settings")
     public String settings(HttpServletRequest request) {
@@ -1316,7 +1423,10 @@ public class AdminController {
     }
 
     /**
-     * 管理员设置页面 - 包含夜间模式、中英文切换、修改密码、操作日志查看
+     * 管理员设置页面
+     * 显示管理员设置页面，包含库存预警阈值设置、修改密码、操作日志查看入口等
+     * @param request HttpServletRequest请求对象，用于验证管理员权限和获取session信息
+     * @return ModelAndView 返回管理员设置页面视图
      */
     @RequestMapping("/adminSettings")
     public ModelAndView adminSettings(HttpServletRequest request) {
@@ -1353,7 +1463,10 @@ public class AdminController {
     }
     
     /**
-     * 操作日志查看页面 - 显示所有用户的操作日志
+     * 操作日志页面
+     * 显示所有用户的操作日志，支持按用户名、操作、IP、方法、日志ID搜索，支持分页
+     * @param request HttpServletRequest请求对象，包含keyword（搜索关键词）、page（当前页码）参数
+     * @return ModelAndView 返回操作日志页面视图
      */
     @RequestMapping("/operationLogs")
     public ModelAndView operationLogs(HttpServletRequest request) {
@@ -1434,6 +1547,9 @@ public class AdminController {
     
     /**
      * 库存预警页面
+     * 显示库存低于预警阈值的商品列表，支持设置和调整预警阈值
+     * @param request HttpServletRequest请求对象，包含action（操作类型）、threshold（阈值）参数
+     * @return ModelAndView 返回库存预警页面视图
      */
     @RequestMapping("/stockWarning")
     public ModelAndView stockWarning(HttpServletRequest request) {
@@ -1514,7 +1630,10 @@ public class AdminController {
     }
     
     /**
-     * 获取库存预警商品数量（用于登录时提示）
+     * 获取库存预警商品数量
+     * 查询库存低于预警阈值的商品数量，用于登录时提示
+     * @param request HttpServletRequest请求对象，用于获取session中的预警阈值
+     * @return int 库存预警商品数量
      */
     public int getWarningGoodsCount(HttpServletRequest request) {
         HttpSession session = request.getSession();
@@ -1530,7 +1649,10 @@ public class AdminController {
     }
     
     /**
-     * 获取库存预警商品列表（用于提示详情）
+     * 获取库存预警商品列表
+     * 查询库存低于预警阈值的商品列表，用于提示详情展示
+     * @param request HttpServletRequest请求对象，用于获取session中的预警阈值
+     * @return List<Goods> 库存预警商品列表
      */
     public List<Goods> getWarningGoodsList(HttpServletRequest request) {
         HttpSession session = request.getSession();
@@ -1560,6 +1682,9 @@ public class AdminController {
     
     /**
      * 修改管理员密码
+     * 验证旧密码正确，且新密码与确认密码一致后，修改当前登录管理员的密码
+     * @param request HttpServletRequest请求对象，包含oldPassword（旧密码）、newPassword（新密码）、confirmPassword（确认密码）参数
+     * @return String 重定向到管理员设置页面
      */
     @RequestMapping("/changePassword")
     public String changePassword(HttpServletRequest request) {

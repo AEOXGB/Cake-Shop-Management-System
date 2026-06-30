@@ -71,13 +71,71 @@
     border-top-color: rgba(245, 230, 211, 0.5);
 }
 
-.navbar-cake .navbar-right .label-badge {
-    background: linear-gradient(135deg, #C9A96E, #A68B5C) !important;
+.navbar-cake .navbar-right .cart-nav-item {
     position: relative;
-    top: -8px;
-    font-size: 11px;
-    padding: 3px 7px;
-    border-radius: 10px;
+}
+
+.navbar-cake .navbar-right .cart-nav-item > a {
+    padding: 10px 16px !important;
+    margin: 2px 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.navbar-cake .navbar-right .cart-nav-item .icon-shopping-cart {
+    font-size: 22px !important;
+    color: #C9A96E !important;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(201, 169, 110, 0.4));
+}
+
+.navbar-cake .navbar-right .cart-nav-item:hover .icon-shopping-cart {
+    transform: scale(1.15) rotate(-8deg);
+    color: #F5E6D3 !important;
+    filter: drop-shadow(0 4px 8px rgba(201, 169, 110, 0.6));
+}
+
+.navbar-cake .navbar-right .cart-nav-item .label-badge {
+    background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+    color: #fff !important;
+    position: absolute !important;
+    top: 2px !important;
+    right: 2px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    padding: 2px 8px !important;
+    border-radius: 12px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    line-height: 16px !important;
+    text-align: center !important;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.5) !important;
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.navbar-cake .navbar-right .cart-nav-item::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    background: radial-gradient(circle, rgba(201, 169, 110, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.navbar-cake .navbar-right .cart-nav-item:hover::before {
+    opacity: 1;
 }
 
 /* 搜索框 */
@@ -562,7 +620,7 @@ div.chat-overlay.show {
             </ul>
 
             <ul class="nav navbar-nav navbar-right" style="padding-right:20px;">
-                <li><a th:href="@{/cart/cartList}"><i class="icon icon-shopping-cart icon-2x"></i><span class="label label-badge" th:text="${count}">0</span></a></li>
+                <li class="cart-nav-item"><a th:href="@{/cart/cartList}" title="购物车"><i class="icon icon-shopping-cart"></i><span class="label label-badge" th:text="${count}">0</span></a></li>
             </ul>
 
             <th:block th:if="${#request.requestURI != '/cart/cartList' && !#request.requestURI.contains('/order/myOrders') && !#request.requestURI.contains('/goods/topSell') && !#request.requestURI.contains('/goods/newArrivals')}">

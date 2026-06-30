@@ -133,20 +133,43 @@
             border-left-color: #C9A96E;
         }
         
-        .tree-menu li .icon {
+        .tree-menu li .menu-icon {
             margin-right: 14px;
-            font-size: 20px;
-            width: 24px;
+            font-size: 22px;
+            width: 28px;
             text-align: center;
-            color: rgba(201, 169, 110, 0.5);
-            transition: color 0.3s;
+            color: rgba(201, 169, 110, 0.7);
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            flex-shrink: 0;
         }
         
-        .tree-menu li.active .icon {
+        .tree-menu li.active .menu-icon {
+            color: #C9A96E;
+            filter: drop-shadow(0 2px 6px rgba(201, 169, 110, 0.5));
+        }
+        
+        .tree-menu li a:hover .menu-icon {
+            color: #C9A96E;
+            transform: scale(1.1);
+            filter: drop-shadow(0 2px 8px rgba(201, 169, 110, 0.6));
+        }
+        
+        .tree-menu li .submenu-icon {
+            margin-right: 10px;
+            font-size: 14px;
+            width: 18px;
+            text-align: center;
+            color: rgba(201, 169, 110, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .tree-menu .submenu li.active .submenu-icon {
             color: #C9A96E;
         }
         
-        .tree-menu li a:hover .icon {
+        .tree-menu .submenu li a:hover .submenu-icon {
             color: #C9A96E;
         }
         
@@ -164,12 +187,14 @@
         }
         
         .tree-menu .submenu li a {
-            padding-left: 40px;
+            padding-left: 30px;
             padding-top: 12px;
             padding-bottom: 12px;
             font-size: 13px;
             background: transparent !important;
             border-left: none;
+            display: flex;
+            align-items: center;
         }
         
         .tree-menu .submenu li a:hover {
@@ -181,6 +206,27 @@
             color: #C9A96E;
             background: rgba(201, 169, 110, 0.08) !important;
             border-left: 2px solid #C9A96E;
+        }
+        
+        /* 用户管理和数据统计之间的间距调整 */
+        .tree-menu li.menu-item-user {
+            margin-bottom: 0;
+        }
+        
+        .tree-menu li.menu-item-stats {
+            margin-top: 0;
+            padding-top: 12px;
+            position: relative;
+        }
+        
+        .tree-menu li.menu-item-stats::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 25px;
+            right: 25px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.25), transparent);
         }
         
         .tree-menu .has-submenu > a::after {
@@ -1387,69 +1433,67 @@
             <ul class="tree-menu">
                 <li class="has-submenu" th:classappend="${active >= 0 && active <= 1 ? 'open active' : ''}">
                     <a th:href="@{/admin/goodsList}">
-                        <i class="icon icon-shopping-cart icon"></i>
+                        <i class="icon icon-shopping-cart menu-icon"></i>
                         <span>商品管理</span>
                     </a>
                     <ul class="submenu">
                         <li th:classappend="${active == 0 ? 'active' : ''}">
-                            <a th:href="@{/admin/goodsList}">商品列表</a>
+                            <a th:href="@{/admin/goodsList}"><i class="icon icon-list submenu-icon"></i>商品列表</a>
                         </li>
                         <li th:classappend="${active == 1 ? 'active' : ''}">
-                            <a th:href="@{/admin/categoryList}">分类管理</a>
+                            <a th:href="@{/admin/categoryList}"><i class="icon icon-tags submenu-icon"></i>分类管理</a>
                         </li>
                     </ul>
                 </li>
                 
                 <li class="has-submenu" th:classappend="${active == 2 ? 'open active' : ''}">
                     <a th:href="@{/admin/orderList}">
-                        <i class="icon icon-file-text icon"></i>
+                        <i class="icon icon-file-text menu-icon"></i>
                         <span>订单管理</span>
                     </a>
                     <ul class="submenu">
                         <li th:classappend="${active == 2 ? 'active' : ''}">
-                            <a th:href="@{/admin/orderList}">订单列表</a>
+                            <a th:href="@{/admin/orderList}"><i class="icon icon-list submenu-icon"></i>订单列表</a>
                         </li>
                     </ul>
                 </li>
                 
-                <li class="has-submenu" th:classappend="${active >= 4 && active <= 6 ? 'open active' : ''}">
+                <li class="has-submenu menu-item-user" th:classappend="${active >= 4 && active <= 6 ? 'open active' : ''}">
                     <a th:href="@{/admin/userList}">
-                        <i class="icon icon-users icon"></i>
+                        <i class="icon icon-user menu-icon"></i>
                         <span>用户管理</span>
                     </a>
                     <ul class="submenu">
                         <li th:classappend="${active == 4 ? 'active' : ''}">
-                            <a th:href="@{/admin/userList}">未审核用户</a>
+                            <a th:href="@{/admin/userList}"><i class="icon icon-user submenu-icon"></i>未审核用户</a>
                         </li>
                         <li th:classappend="${active == 5 ? 'active' : ''}">
-                            <a th:href="@{/admin/userStats}">用户列表</a>
+                            <a th:href="@{/admin/userStats}"><i class="icon icon-list submenu-icon"></i>用户列表</a>
                         </li>
                         <li th:classappend="${active == 6 ? 'active' : ''}">
-                            <a th:href="@{/admin/riderList}">骑手审核</a>
+                            <a th:href="@{/admin/riderList}"><i class="icon icon-motorcycle submenu-icon"></i>骑手审核</a>
                         </li>
                     </ul>
                 </li>
                 
-                <div class="menu-divider"></div>
-                
-                <li class="has-submenu" th:classappend="${active == 7 ? 'open active' : ''}">
+                <li class="has-submenu menu-item-stats" th:classappend="${active == 7 ? 'open active' : ''}">
                     <a th:href="@{/admin/stockWarning}">
-                        <i class="icon icon-bar-chart icon"></i>
+                        <i class="icon icon-bar-chart menu-icon"></i>
                         <span>数据统计</span>
                     </a>
                     <ul class="submenu">
                         <li th:classappend="${active == 3 ? 'active' : ''}">
-                            <a th:href="@{/admin/orderStats}">销售统计</a>
+                            <a th:href="@{/admin/orderStats}"><i class="icon icon-line-chart submenu-icon"></i>销售统计</a>
                         </li>
                         <li th:classappend="${active == 7 ? 'active' : ''}">
-                            <a th:href="@{/admin/stockWarning}">库存预警</a>
+                            <a th:href="@{/admin/stockWarning}"><i class="icon icon-exclamation-triangle submenu-icon"></i>库存预警</a>
                         </li>
                     </ul>
                 </li>
                 
-                <li th:classappend="${active == 8 ? 'active' : ''}">
+                <li class="menu-item-settings" th:classappend="${active == 8 ? 'active' : ''}">
                     <a th:href="@{/admin/adminSettings}">
-                        <i class="icon icon-cog icon"></i>
+                        <i class="icon icon-cog menu-icon"></i>
                         <span>管理员设置</span>
                     </a>
                 </li>
